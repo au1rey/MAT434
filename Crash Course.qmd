@@ -1,0 +1,12 @@
+---
+title: "Crash Course"
+format: html
+author: "Audrey Saidel"
+title-block-banner: "#F9629F"
+description-title: "Summary"
+description: "Crash Course in Git, Quarto, and R"
+---
+```{r}
+
+```
+
