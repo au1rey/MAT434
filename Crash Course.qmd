@@ -1,10 +1,17 @@
 ---
 title: "Crash Course"
 format: html
-author: "Audrey Saidel"
+author: 
+  - name: Audrey Saidel
+    email: audrey.saidel@snhu.edu
+    affiliations: 
+      - name: Southern New Hampshire University
+date: 1/8/2025
+date-modified: 1/8/2025
 title-block-banner: "#F9629F"
-description-title: "Summary"
 description: "Crash Course in Git, Quarto, and R"
+theme: journal
+toc: true
 ---
 ```{r}
 
