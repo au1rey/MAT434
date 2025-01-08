@@ -23,6 +23,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -95,8 +129,15 @@ ul.task-list li input[type="checkbox"] {
     
   
   </header><div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-  
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#exploring-the-data" id="toc-exploring-the-data" class="nav-link active" data-scroll-target="#exploring-the-data">Exploring the Data</a></li>
+  <li><a href="#joining-the-data" id="toc-joining-the-data" class="nav-link" data-scroll-target="#joining-the-data">Joining the Data</a></li>
+  </ul>
+</nav>
 </div>
 <main class="content quarto-banner-title-block" id="quarto-document-content">
 
@@ -104,7 +145,113 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+<p>##Working with Data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Hits <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://raw.githubusercontent.com/agmath/agmath.github.io/refs/heads/master/data/classification/battedballs.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 13000 Columns: 25
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr   (8): home_team, away_team, batter_team, batter_name, pitcher_name, bb_...
+dbl  (16): bip_id, batter_id, pitcher_id, is_batter_lefty, is_pitcher_lefty,...
+date  (1): game_date
 
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ballparks <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://raw.githubusercontent.com/agmath/agmath.github.io/refs/heads/master/data/classification/park_dimensions.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 30 Columns: 9
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (2): NAME, Cover
+dbl (7): park, LF_Dim, CF_Dim, RF_Dim, LF_W, CF_W, RF_W
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+<section id="exploring-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="exploring-the-data">Exploring the Data</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>Hits <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 25
+  bip_id game_date  home_team away_team batter_team batter_name     pitcher_name
+   &lt;dbl&gt; &lt;date&gt;     &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;       &lt;chr&gt;           &lt;chr&gt;       
+1  61093 2020-09-11 TB        BOS       BOS         bogaerts, xand… snell, blake
+2 117924 2020-08-31 CIN       STL       STL         edman, tommy    lorenzen, m…
+3  84178 2020-09-12 WSH       ATL       WSH         soto, juan      anderson, i…
+4  25265 2020-09-04 CLE       MIL       CLE         lindor, franci… burnes, cor…
+5 117768 2020-08-25 STL       KC        STL         wong, kolten    newberry, j…
+6  54097 2020-08-23 STL       CIN       CIN         ervin, phil     reyes, alex 
+# ℹ 18 more variables: batter_id &lt;dbl&gt;, pitcher_id &lt;dbl&gt;,
+#   is_batter_lefty &lt;dbl&gt;, is_pitcher_lefty &lt;dbl&gt;, bb_type &lt;chr&gt;,
+#   bearing &lt;chr&gt;, pitch_name &lt;chr&gt;, park &lt;dbl&gt;, inning &lt;dbl&gt;,
+#   outs_when_up &lt;dbl&gt;, balls &lt;dbl&gt;, strikes &lt;dbl&gt;, plate_x &lt;dbl&gt;,
+#   plate_z &lt;dbl&gt;, pitch_mph &lt;dbl&gt;, launch_speed &lt;dbl&gt;, launch_angle &lt;dbl&gt;,
+#   is_home_run &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ballparks <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 9
+   park NAME                        Cover LF_Dim CF_Dim RF_Dim  LF_W  CF_W  RF_W
+  &lt;dbl&gt; &lt;chr&gt;                       &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1     0 Chase Field                 Roof     328    407    335     8    25     8
+2     1 SunTrust Park               Outd…    335    400    325     6     8    16
+3     2 Oriole Park at Camden Yards Outd…    333    400    318     7     7    21
+4     3 Fenway Park                 Outd…    310    390    302    37     9     3
+5     4 Wrigley Field               Outd…    355    400    353    16    11    16
+6     5 Great American Ballpark     Outd…    328    404    325    12     8     8</code></pre>
+</div>
+</div>
+</section>
+<section id="joining-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="joining-the-data">Joining the Data</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>Hits <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(ballparks, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"park"</span> <span class="ot">=</span> <span class="st">"park"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 13,000 × 33
+   bip_id game_date  home_team away_team batter_team batter_name    pitcher_name
+    &lt;dbl&gt; &lt;date&gt;     &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;       &lt;chr&gt;          &lt;chr&gt;       
+ 1  61093 2020-09-11 TB        BOS       BOS         bogaerts, xan… snell, blake
+ 2 117924 2020-08-31 CIN       STL       STL         edman, tommy   lorenzen, m…
+ 3  84178 2020-09-12 WSH       ATL       WSH         soto, juan     anderson, i…
+ 4  25265 2020-09-04 CLE       MIL       CLE         lindor, franc… burnes, cor…
+ 5 117768 2020-08-25 STL       KC        STL         wong, kolten   newberry, j…
+ 6  54097 2020-08-23 STL       CIN       CIN         ervin, phil    reyes, alex 
+ 7  58175 2020-09-25 CWS       CHC       CWS         grandal, yasm… darvish, yu 
+ 8 118766 2020-07-26 CWS       MIN       MIN         cruz, nelson   gonzalez, g…
+ 9  11349 2020-10-11 TB        HOU       TB          zunino, mike   valdez, fra…
+10  61080 2020-09-11 TB        BOS       BOS         bradley, jack… snell, blake
+# ℹ 12,990 more rows
+# ℹ 26 more variables: batter_id &lt;dbl&gt;, pitcher_id &lt;dbl&gt;,
+#   is_batter_lefty &lt;dbl&gt;, is_pitcher_lefty &lt;dbl&gt;, bb_type &lt;chr&gt;,
+#   bearing &lt;chr&gt;, pitch_name &lt;chr&gt;, park &lt;dbl&gt;, inning &lt;dbl&gt;,
+#   outs_when_up &lt;dbl&gt;, balls &lt;dbl&gt;, strikes &lt;dbl&gt;, plate_x &lt;dbl&gt;,
+#   plate_z &lt;dbl&gt;, pitch_mph &lt;dbl&gt;, launch_speed &lt;dbl&gt;, launch_angle &lt;dbl&gt;,
+#   is_home_run &lt;dbl&gt;, NAME &lt;chr&gt;, Cover &lt;chr&gt;, LF_Dim &lt;dbl&gt;, CF_Dim &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+</section>
 
 </main>
 <!-- /main column -->

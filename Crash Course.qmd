@@ -13,7 +13,26 @@ description: "Crash Course in Git, Quarto, and R"
 theme: journal
 toc: true
 ---
+##Working with Data
 ```{r}
+library(tidyverse)
 
+Hits <- read_csv("https://raw.githubusercontent.com/agmath/agmath.github.io/refs/heads/master/data/classification/battedballs.csv")
+ballparks <- read_csv("https://raw.githubusercontent.com/agmath/agmath.github.io/refs/heads/master/data/classification/park_dimensions.csv")
+
+```
+## Exploring the Data
+```{r}
+Hits |>
+  head()
+```
+```{r}
+ballparks |>
+  head()
+```
+## Joining the Data
+```{r}
+Hits |>
+  left_join(ballparks, by = c("park" = "park"))
 ```
 
