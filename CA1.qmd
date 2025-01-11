@@ -1,0 +1,30 @@
+---
+title: "CA1"
+format: html
+author: 
+  - name: Audrey Saidel
+    email: audrey.saidel@snhu.edu
+    affiliations: 
+      - name: Southern New Hampshire University
+date: 1/11/2025
+date-modified: 1/11/2025
+title-block-banner: "#F9629F"
+description: "Competition Assignment #1"
+theme: journal
+toc: true
+---
+
+#Setup
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(kableExtra)
+data <- read_csv("data.csv")
+```
+
+```{r}
+data %>%
+  head()
+```
+
