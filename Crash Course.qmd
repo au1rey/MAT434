@@ -111,4 +111,18 @@ train |>
     
   )
 ```
+#### Grouped Summaries
+
+```{r}
+train |>
+  group_by(is_home_run) |>
+  summarize(
+    min_angle = min(launch_angle, na.rm = TRUE),
+    mean_angle = mean(launch_angle, na.rm = TRUE),
+    median_angle = median(launch_angle, na.rm = TRUE),
+    max_angle = max(launch_angle, na.rm = TRUE),
+    sd_angle = sd(launch_angle, na.rm = TRUE)
+    
+  )
+```
 
