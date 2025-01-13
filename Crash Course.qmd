@@ -12,10 +12,16 @@ title-block-banner: "#F9629F"
 description: "Crash Course in Git, Quarto, and R"
 theme: journal
 toc: true
+
 ---
 ##Working with Data
 ```{r}
+#| message: false
+#| code-fold: true
 library(tidyverse)
+library(tidymodels)
+library(kableExtra)
+library(skimr)
 
 Hits <- read_csv("https://raw.githubusercontent.com/agmath/agmath.github.io/refs/heads/master/data/classification/battedballs.csv")
 ballparks <- read_csv("https://raw.githubusercontent.com/agmath/agmath.github.io/refs/heads/master/data/classification/park_dimensions.csv")
@@ -24,15 +30,85 @@ ballparks <- read_csv("https://raw.githubusercontent.com/agmath/agmath.github.io
 ## Exploring the Data
 ```{r}
 Hits |>
-  head()
+  head() |>
+    kable()
 ```
 ```{r}
 ballparks |>
-  head()
+  head() |>
+    kable()
 ```
 ## Joining the Data
 ```{r}
-Hits |>
+Hits <- Hits |>
   left_join(ballparks, by = c("park" = "park"))
+```
+
+We joined the hits and parks data together to obtain a full dataset with `r nrow(Hits)` rows and `r ncol(Hits)` columns
+```{r}
+Hits |>
+  head() |>
+    kable()
+```
+
+```{r}
+skim(Hits) 
+```
+Split into training and test data
+
+```{r}
+set.seed(555)
+data_splits <- initial_split(Hits, 0.85, strata = is_home_run)
+
+train <- training(data_splits)
+test <- testing(data_splits)
+```
+
+## Exploratory Data Analysis
+
+How and why do home runs happen?
+
+## Sometimes useful functionality
+Filtering rows
+
+```{r}
+  train |>
+    filter(is_home_run == 1)
+
+  train |>
+    filter(launch_angle > 80)
+  
+  train |>
+    filter(str_detect(NAME, "Fenway"))
+```
+Selecting just a few columns
+```{r}
+  train |>
+    select(launch_speed, launch_angle)
+```
+Building new variables from old ones (*Feature Engineering*)
+```{r}
+train |>
+  mutate(fast_pitch = ifelse(pitch_mph > 100, "yes", "no"))
+```
+## Summary Statistics
+
+Home runs...
+
+```{r}
+train |>
+  count(is_home_run) |>
+  mutate(prop = 100*n/sum(n))
+```
+```{r}
+train |>
+  summarize(
+    min_angle = min(launch_angle, na.rm = TRUE),
+    mean_angle = mean(launch_angle, na.rm = TRUE),
+    median_angle = median(launch_angle, na.rm = TRUE),
+    max_angle = max(launch_angle, na.rm = TRUE),
+    sd_angle = sd(launch_angle, na.rm = TRUE)
+    
+  )
 ```
 
