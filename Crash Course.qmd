@@ -14,7 +14,7 @@ theme: journal
 toc: true
 
 ---
-##Working with Data
+## Working with Data
 ```{r}
 #| message: false
 #| code-fold: true
@@ -68,7 +68,7 @@ test <- testing(data_splits)
 
 How and why do home runs happen?
 
-## Sometimes useful functionality
+### Sometimes useful functionality
 Filtering rows
 
 ```{r}
@@ -91,7 +91,7 @@ Building new variables from old ones (*Feature Engineering*)
 train |>
   mutate(fast_pitch = ifelse(pitch_mph > 100, "yes", "no"))
 ```
-## Summary Statistics
+### Summary Statistics
 
 Home runs...
 
@@ -125,4 +125,54 @@ train |>
     
   )
 ```
+### Data Visualization
+
+#### Single Variables
+```{r}
+train |>
+  ggplot()+
+  geom_bar(aes(x = factor(is_home_run, labels = c("No", "Yes")), fill = factor(is_home_run, labels = c("No", "Yes")))) + 
+  scale_fill_manual(values = c("pink", "red")) +
+  labs( ##labeling the chart
+    title = "Home Run Distribution",
+    x = "Is Home Run",
+    y = "Count",
+    fill = "Home Run"
+  ) +
+  theme_minimal() ##gets rid of the gray background
+```
+```{r}
+train |>
+  ggplot() +
+  geom_boxplot(aes(x = pitch_mph))
+```
+```{r}
+train |> 
+  ggplot() +
+  geom_histogram(aes(x = launch_speed, y = after_stat(density)), bins = 30, na.rm = TRUE, fill = "pink") +
+   geom_density(aes(x = launch_speed), color = "red", size = 1, alpha = .04) +
+  labs(
+    title = "Launch Speed Distribution",
+    x = "Launch Speed",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+```
+#### Multiple Variable
+
+```{r}
+train |>
+  ggplot() +
+  geom_bar(aes(x = batter_team, fill = factor(is_home_run, labels = c("No", "Yes")))) +
+  scale_fill_manual(values = c("pink", "red")) +  
+  labs(
+    title = "Home Runs by Batter Team",
+    x = "Batter Team",
+    y = "Count",
+    fill = "Home Run"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+```
+
 
