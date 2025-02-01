@@ -175,4 +175,63 @@ train |>
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 ```
 
+###### Will a batted ball be a home run?
+```{r}
+# Check the unique values before mapping
+unique(train$is_home_run)
+train$is_home_run <- as.character(train$is_home_run)
+train$is_home_run <- ifelse(train$is_home_run == 1, "yes", "no")
+# Check the unique values after mapping
+unique(train$is_home_run)
+```
+```{r}
+train$is_home_run <- factor(train$is_home_run, levels = c("no", "yes"))
+
+levels(train$is_home_run)  # This should show "no" and "yes"
+table(train$is_home_run)  # This should give the count of "yes" and "no"
+
+```
+```{r}
+train_folds <- vfold_cv(train, v = 5)
+```
+
+```{r}
+dt_spec <- decision_tree() %>%
+  set_engine("rpart") %>%
+  set_mode("classification")
+```
+
+```{r}
+dt_rec <- recipe(is_home_run ~ ., data = train) %>%
+  step_impute_median(all_numeric_predictors()) %>%
+  step_impute_mode(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+```
+
+```{r}
+dt_wf <- workflow() |>
+  add_model(dt_spec) |>
+  add_recipe(dt_rec)
+```
+
+
+```{r}
+dt_cv_results <- dt_wf |>
+  fit_resamples(train_folds)
+```
+```{r}
+dt_cv_results |>
+  collect_metrics()
+```
+
+```{r}
+dt_fit <- dt_wf |>
+  fit(train)
+```
+```{r}
+test$is_home_run <- factor(test$is_home_run, levels = c("no", "yes"))
+dt_fit |>
+  augment(test) |>
+  accuracy(is_home_run, .pred_class)
+```
 

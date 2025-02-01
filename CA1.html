@@ -76,6 +76,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         background: #F9629F;
       }
 </style>
+<script src="CA1_files/libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="CA1_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
 
 
 </head>
@@ -121,7 +125,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Modified</div>
       <div class="quarto-title-meta-contents">
-        <p class="date-modified">January 11, 2025</p>
+        <p class="date-modified">February 1, 2025</p>
       </div>
     </div>
       
@@ -129,8 +133,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     
   
   </header><div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-  
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#statement-of-purpose" id="toc-statement-of-purpose" class="nav-link" data-scroll-target="#statement-of-purpose">Statement of Purpose</a>
+  <ul class="collapse">
+  <li><a href="#price-range-distribution" id="toc-price-range-distribution" class="nav-link" data-scroll-target="#price-range-distribution">Price Range Distribution</a></li>
+  <li><a href="#price-range-and-city" id="toc-price-range-and-city" class="nav-link" data-scroll-target="#price-range-and-city">Price Range and City</a></li>
+  <li><a href="#price-range-and-home-type" id="toc-price-range-and-home-type" class="nav-link" data-scroll-target="#price-range-and-home-type">Price Range and Home Type</a></li>
+  <li><a href="#price-range-and-average-school-rating" id="toc-price-range-and-average-school-rating" class="nav-link" data-scroll-target="#price-range-and-average-school-rating">Price Range and Average School Rating</a>
+  <ul class="collapse">
+  <li><a href="#comparison" id="toc-comparison" class="nav-link" data-scroll-target="#comparison">Comparison</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
 </div>
 <main class="content quarto-banner-title-block" id="quarto-document-content">
 
@@ -138,35 +158,571 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<p>#Setup</p>
+<section id="setup" class="level1">
+<h1>Setup</h1>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data.csv"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">555</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>data_splits <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(data, <span class="fl">0.75</span>, <span class="at">strata =</span> priceRange)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">training</span>(data_splits)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> <span class="fu">testing</span>(data_splits)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="statement-of-purpose" class="level1">
+<h1>Statement of Purpose</h1>
+<p>Zillow is a real estate market website that lists houses for sale in both the US and Canada. Zillow carries data on sale prices, rent prices, mortgage prices, locations, and house sizing details. This project seeks to construct predictive models on the listed price range of a property in the US. This project will enhance transparency in the real estate market by displaying the factors that impact listing price range. This can help buyers make informed decisions when buying a house, as well as help sellers figure out a practical price point to list their house at. # Exploratory Data Analysis Before we begin the analysis, here is a snippet of the first six rows of the Zillow data we will be working with. In the data set, there are 7498 observations.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">%&gt;%</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 16
-     id city   description       homeType latitude longitude garageSpaces hasSpa
-  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;             &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;        &lt;dbl&gt; &lt;lgl&gt; 
-1     1 austin "7300 Annette Cv… Single …     30.3     -97.6            1 FALSE 
-2     2 austin "Extravagant and… Single …     30.3     -97.8            2 TRUE  
-3     3 austin "HIGH RENTABLE A… Multipl…     30.3     -97.7            1 FALSE 
-4     4 austin "Great house in … Single …     30.3     -97.7            0 FALSE 
-5     5 austin "FOR SALE BY OWN… Single …     30.4     -97.9            0 FALSE 
-6     6 austin "Under market pr… Condo        30.4     -97.7            0 FALSE 
-# ℹ 8 more variables: yearBuilt &lt;dbl&gt;, numOfPatioAndPorchFeatures &lt;dbl&gt;,
-#   lotSizeSqFt &lt;dbl&gt;, avgSchoolRating &lt;dbl&gt;, MedianStudentsPerTeacher &lt;dbl&gt;,
-#   numOfBathrooms &lt;dbl&gt;, numOfBedrooms &lt;dbl&gt;, priceRange &lt;chr&gt;</code></pre>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span>            <span class="co"># description is much too long</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">description =</span> <span class="fu">str_trunc</span>(description, <span class="at">width =</span> <span class="dv">50</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">|&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">|&gt;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">id</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">city</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">description</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">homeType</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">latitude</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">longitude</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">garageSpaces</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">hasSpa</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">yearBuilt</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">numOfPatioAndPorchFeatures</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">lotSizeSqFt</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">avgSchoolRating</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">MedianStudentsPerTeacher</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">numOfBathrooms</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">numOfBedrooms</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">priceRange</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">austin</td>
+<td style="text-align: left;">7300 Annette Cv, Austin, TX 78724 is a single f...</td>
+<td style="text-align: left;">Single Family</td>
+<td style="text-align: right;">30.28529</td>
+<td style="text-align: right;">-97.64630</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">2007</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6795.0</td>
+<td style="text-align: right;">3.666667</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">250000-350000</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">austin</td>
+<td style="text-align: left;">Extravagant and luxurious 5 bedroom, 4.5 bath p...</td>
+<td style="text-align: left;">Single Family</td>
+<td style="text-align: right;">30.29841</td>
+<td style="text-align: right;">-97.77605</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">2015</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">8276.0</td>
+<td style="text-align: right;">7.000000</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">650000+</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">austin</td>
+<td style="text-align: left;">HIGH RENTABLE AREA! Beautifully kept duplex loc...</td>
+<td style="text-align: left;">Multiple Occupancy</td>
+<td style="text-align: right;">30.32740</td>
+<td style="text-align: right;">-97.69390</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">1967</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">8886.0</td>
+<td style="text-align: right;">3.333333</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0-250000</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">austin</td>
+<td style="text-align: left;">Great house in the heart of downtown East Austi...</td>
+<td style="text-align: left;">Single Family</td>
+<td style="text-align: right;">30.25436</td>
+<td style="text-align: right;">-97.72549</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2178.0</td>
+<td style="text-align: right;">4.000000</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">250000-350000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">austin</td>
+<td style="text-align: left;">FOR SALE BY OWNER AND FULLY RENOVATED: Wake up ...</td>
+<td style="text-align: left;">Single Family</td>
+<td style="text-align: right;">30.36166</td>
+<td style="text-align: right;">-97.85528</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">1999</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">12196.8</td>
+<td style="text-align: right;">7.000000</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">650000+</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">austin</td>
+<td style="text-align: left;">Under market pricing!!! Owner wants to move it...</td>
+<td style="text-align: left;">Condo</td>
+<td style="text-align: right;">30.36236</td>
+<td style="text-align: right;">-97.71042</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">1974</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">400.0</td>
+<td style="text-align: right;">4.000000</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">0-250000</td>
+</tr>
+</tbody>
+</table>
+
+
 </div>
 </div>
+<p>Strata will be used in the training data set due to an unbalanced lower proportion of houses in the 0-250000 price range.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Check distribution of price_range in the full dataset</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(priceRange) <span class="sc">|&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">proportion =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n)) <span class="sc">|&gt;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">|&gt;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">priceRange</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">n</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">proportion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">0-250000</td>
+<td style="text-align: right;">936</td>
+<td style="text-align: right;">0.1248333</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">250000-350000</td>
+<td style="text-align: right;">1767</td>
+<td style="text-align: right;">0.2356628</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">350000-450000</td>
+<td style="text-align: right;">1725</td>
+<td style="text-align: right;">0.2300613</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">450000-650000</td>
+<td style="text-align: right;">1706</td>
+<td style="text-align: right;">0.2275273</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">650000+</td>
+<td style="text-align: right;">1364</td>
+<td style="text-align: right;">0.1819152</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<section id="price-range-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="price-range-distribution">Price Range Distribution</h2>
+<p>This section maps the distribution of the priceRange variable. To begin with, pictured below is a chart displaying the summary of priceRange in our training data set this time.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>train <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(priceRange) <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">proportion =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n)) <span class="sc">|&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">|&gt;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">priceRange</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">n</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">proportion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">0-250000</td>
+<td style="text-align: right;">702</td>
+<td style="text-align: right;">0.1248666</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">250000-350000</td>
+<td style="text-align: right;">1325</td>
+<td style="text-align: right;">0.2356813</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">350000-450000</td>
+<td style="text-align: right;">1293</td>
+<td style="text-align: right;">0.2299893</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">450000-650000</td>
+<td style="text-align: right;">1279</td>
+<td style="text-align: right;">0.2274991</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">650000+</td>
+<td style="text-align: right;">1023</td>
+<td style="text-align: right;">0.1819637</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>Below is a visual bar chart displaying the summary of priceRange in our training data set. From both the graph and the bar chart, it appears that there are more homes in our data set that have the price range of: 250000-350000 and fewer homes that have the price range of: 0-250000. This lines up with the proportions of the entire data set from earlier, and further proves why it was necessary to use strata.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train, <span class="fu">aes</span>(<span class="at">x =</span> priceRange, <span class="at">fill =</span> priceRange)) <span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Number of Homes by Price Range"</span>, <span class="at">x =</span> <span class="st">"Price Range"</span>, <span class="at">y =</span> <span class="st">"Number of Homes"</span>) <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="co"># Diagonal prices</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="CA1_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The graph is reasonable, as the more average house prices (250000 to 650000) are the most populated with houses. The more extreme min and maximum price ranges have less houses, due to their rarity.</p>
+<p>Now that we understand the distribution of price ranges better, it’s time to look for the factors that may influence them the most.</p>
+</section>
+<section id="price-range-and-city" class="level2">
+<h2 class="anchored" data-anchor-id="price-range-and-city">Price Range and City</h2>
+<p>Assuming the price range will vary by city is a reasonable guess, as some cities are known to be more expensive than others. To try and prove this, it is first best to look for how many properties exist in each city, so we can get a feel for the scope of the houses. We can do this buy creating a chart similar to the one we used for the count of priceRange.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>train <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(city) <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">proportion =</span> n<span class="sc">/</span><span class="fu">sum</span>(n)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">city</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">n</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">proportion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">austin</td>
+<td style="text-align: right;">5555</td>
+<td style="text-align: right;">0.9880825</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">del valle</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">0.0065813</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">driftwood</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0.0010672</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dripping springs</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.0003557</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">manchaca</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0.0005336</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">pflugerville</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">0.0030238</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">west lake hills</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.0003557</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train, <span class="fu">aes</span>(<span class="at">x =</span> city, <span class="at">fill =</span> city)) <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Number of Homes by City"</span>, <span class="at">x =</span> <span class="st">"City"</span>, <span class="at">y =</span> <span class="st">"Number of Homes"</span>) <span class="sc">+</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="co"># Diagonal city</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="CA1_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Wow! It seems like 98% of our homes are located in Austin. Because of this horribly uneven and skewed distribution, it’s not worth looking into if priceRange is effected by the city the house is in, since 98% of the houses are in the same city.</p>
+<p>Let’s try something different.</p>
+</section>
+<section id="price-range-and-home-type" class="level2">
+<h2 class="anchored" data-anchor-id="price-range-and-home-type">Price Range and Home Type</h2>
+<p>It is reasonable to suggest that the type of home may effect the price range the home is in due to size and accommodations. To prove this however, we will once again need a count of all the different home types.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>train <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(homeType)<span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">proportion =</span> n<span class="sc">/</span><span class="fu">sum</span>(n)) <span class="sc">|&gt;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">|&gt;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">homeType</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">n</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">proportion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Apartment</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.0019566</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Condo</td>
+<td style="text-align: right;">193</td>
+<td style="text-align: right;">0.0343294</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mobile / Manufactured</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0.0012451</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">MultiFamily</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0.0005336</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Multiple Occupancy</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">0.0071149</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Residential</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">0.0028460</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Single Family</td>
+<td style="text-align: right;">5278</td>
+<td style="text-align: right;">0.9388118</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Townhouse</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">0.0126290</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Vacant Land</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0.0005336</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train, <span class="fu">aes</span>(<span class="at">x =</span> homeType, <span class="at">fill =</span> homeType)) <span class="sc">+</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Number of Homes by Home Type"</span>, <span class="at">x =</span> <span class="st">"Home Type"</span>, <span class="at">y =</span> <span class="st">"Number of Homes"</span>) <span class="sc">+</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="co"># Diagonal homeType</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="CA1_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Once again we have the same issue that happened when trying to correlate priceRange to city. The proportions are just too far off. 93% of houses in our training set are single family homes, so even if they were more expensive, it’s unfair to justify it that way with such a skewed proportion.</p>
+<p>Let’s try something else.</p>
+</section>
+<section id="price-range-and-average-school-rating" class="level2">
+<h2 class="anchored" data-anchor-id="price-range-and-average-school-rating">Price Range and Average School Rating</h2>
+<p>It would be interesting to see if there is a association between the average rating of a school, and the price range of a house. It is a generalized thought that the “nicer” (more expensive) the neighborhood is, the higher the rating for their schools. Let’s see if this is true. First, we should calculate the summary statistics for the average school rating, to make sure this is worth looking into.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>train <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_rating =</span> <span class="fu">min</span>(avgSchoolRating),</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">median_rating =</span> <span class="fu">median</span>(avgSchoolRating),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_rating =</span> <span class="fu">mean</span>(avgSchoolRating),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_rating =</span> <span class="fu">max</span>(avgSchoolRating),</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd_rating =</span> <span class="fu">sd</span>(avgSchoolRating)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), </span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">"Metric"</span>,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">"Value"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Metric</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">min_rating</td>
+<td style="text-align: right;">2.333333</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">median_rating</td>
+<td style="text-align: right;">5.778694</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">avg_rating</td>
+<td style="text-align: right;">5.759450</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">max_rating</td>
+<td style="text-align: right;">9.500000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sd_rating</td>
+<td style="text-align: right;">1.872583</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train, <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> avgSchoolRating)) <span class="sc">+</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill =</span> <span class="st">"lightblue"</span>) <span class="sc">+</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Boxplot of Average School Rating"</span>, <span class="at">y =</span> <span class="st">"Average School Rating"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="CA1_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Using the box plot and our summary statistic chart, we can see a clear spread of data that is similar to our proportions on price ranges from earlier. This is promising, let’s find out if there is a correlation.</p>
+<section id="comparison" class="level3">
+<h3 class="anchored" data-anchor-id="comparison">Comparison</h3>
+<p>Using another box plot, we will compare average school rating to price range. As shown in the box plot below, there is a positive association between the two variables. It is more likely that the lower the rating for the school is, the lower the median price range is. There is not much change in the higher scale of the chart (450000+), but there is a clear climb in price that follows a climb in school rating. This variable will be able to help us in predicting priceRange.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train, <span class="fu">aes</span>(<span class="at">x =</span> priceRange, <span class="at">y =</span> avgSchoolRating, <span class="at">fill =</span> priceRange)) <span class="sc">+</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Comparison of Average School Rating by Price Range"</span>, <span class="at">x =</span> <span class="st">"Price Range"</span>, <span class="at">y =</span> <span class="st">"Average School Rating"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="CA1_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
 
 </main>
 <!-- /main column -->
