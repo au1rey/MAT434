@@ -1,8 +1,5 @@
 # MAT434
 
-About:
-This repository contains coursework from my Statistical Modeling class, using RStudio and Quarto for data analysis and visualization.  
-
 🚀 About This Repository
 This collection showcases my work in statistical modeling, demonstrating skills in data exploration, hypothesis testing, predictive modeling, and visualization.  
 
