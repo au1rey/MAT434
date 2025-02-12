@@ -1,5 +1,4 @@
 # MAT434
-Classification statistical modeling class
 
 About:
 This repository contains coursework from my Statistical Modeling class, using RStudio and Quarto for data analysis and visualization.  
