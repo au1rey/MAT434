@@ -1,0 +1,77 @@
+---
+title: PCA
+author: 
+  - name: Audrey Saidel
+    email: audrey.saidel@snhu.edu
+    affiliations: 
+      - name: Southern New Hampshire University
+format: html
+date: 2/19/25
+date-modified: today
+date-format: long
+theme: flatly
+toc: true
+code-fold: true
+---
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(ggforce)
+
+data <- read_csv("https://raw.githubusercontent.com/agmath/agmath.github.io/master/data/classification/cancer_gene_expression_data.csv")
+
+set.seed(555)
+data_splits <- initial_split(data, 0.75)
+
+train <- training(data_splits)
+test <- testing(data_splits)
+
+train |>
+  count(labels)
+
+train |>
+  names() |>
+  tail()
+```
+
+```{r}
+train %>% # Creating a matrix of plots
+  select(1:5, 2502) %>%
+    ggplot(aes(x = .panel_x, y = .panel_y, color = labels, fill = labels)) +
+    geom_point() +
+    geom_autodensity(alpha = .3) +
+    facet_matrix(vars(-labels), layer.diag = 2) + 
+    scale_color_brewer(palette = "Dark2") + 
+    scale_fill_brewer(palette = "Dark2")
+```
+
+```{r}
+pca_rec <- recipe(labels ~ ., data = train) |>
+  step_zv(all_predictors()) |>
+  step_normalize(all_numeric_predictors()) |>
+  step_pca(all_numeric_predictors(), num_comp = 5)
+
+pca_rec |>
+  prep() |> # Learning all info from training data
+  tidy(number = 3, type = "variance") |> 
+  filter(terms == "percent variance") |>
+  mutate(total_variance = cumsum(value))
+
+pca_rec |>
+  prep() |>
+  bake(train) # Transform the data into the format right before it hits the model
+```
+
+```{r}
+pca_rec |>
+  prep() |>
+  bake(train) |>
+   ggplot(aes(x = .panel_x, y = .panel_y, color = labels, fill = labels)) +
+    geom_point() +
+    geom_autodensity(alpha = .3) +
+    facet_matrix(vars(-labels), layer.diag = 2) + 
+    scale_color_brewer(palette = "Dark2") + 
+    scale_fill_brewer(palette = "Dark2")
+```
+

@@ -38,6 +38,11 @@ data_splits <- initial_split(data, prop = 0.8, strata = transported)
 
 train <- training(data_splits)
 test <- testing(data_splits)
+
+unregister <- function() {
+  env <- foreach:::.foreachGlobals
+  rm(list=ls(name=env), pos=env)
+}
 ```
 
 ## Statement of Purpose
@@ -592,12 +597,77 @@ log_reg_seq_tune_results |>
   show_best(n = 10, metric = "recall")
 ```
 
+### Vector Support Machine
 
-## Model Interpretation and Inference
+```{r}
+svm_linear_spec <- svm_linear(cost = tune()) |> # Linear SVM
+  set_engine("LiblineaR") |>
+  set_mode("classification")
+
+svm_rec <- recipe(transported ~ ., data = train) |>
+  step_rm(passenger_id) |>
+  step_rm(name) |>
+  step_rm(cabin)|> 
+  step_rm(all_nominal_predictors()) |>
+  step_impute_median(all_numeric_predictors()) |>
+  step_normalize(all_numeric_predictors())
+
+svm_wf <- workflow() |>
+  add_model(svm_linear_spec) |>
+  add_recipe(svm_rec)
+
+
+
+```
+
+##### Hyperparameter Tuning
+```{r}
+n_cores <- parallel::detectCores()
+cl <- parallel::makeCluster(n_cores - 1, type = "PSOCK")
+doParallel::registerDoParallel(cl)
+
+tictoc::tic()
+
+# Tuning
+svm_bayes_results <- svm_wf |>
+  tune_bayes(
+    resamples = train_folds,
+    iter = 20,  
+    metrics = metric_set(recall),
+    initial = 10
+  )
+tictoc::toc()
+
+doParallel::stopImplicitCluster()
+unregister()
+
+svm_bayes_results |>
+  collect_metrics() |>
+  arrange(-mean)
+
+
+```
+
+```{r}
+best_param_svm <- svm_bayes_results |>
+  select_best()
+
+best_svm <- svm_wf |>
+  finalize_workflow(
+  best_param_svm
+)
+best_svm_fit <- best_svm |>
+  fit(train)
+  
+best_svm_fit |>
+  extract_fit_parsnip() |>
+  tidy()
+``` 
+
 
 ## Conclusion
 
-## References
+From looking at the mean on both the Support Vector Machine and the Logistic Regression Model, it is clear that the Logistic Regression Model is better at predicting transported victims. The SVM comes in at .7807, while the LRM is highest at .8702. There is a large percentage point difference, which means we should likely steer clear from using SVM for predictions. This is likely due to the lack of utilization of categorical variables in the SVM. Because the SVM measures distance, it isn't useful to use nominal predictors. However, in the LRM, the use of these categorical variables makes it more accurate when predicting the recall metric. 
 
 
 
