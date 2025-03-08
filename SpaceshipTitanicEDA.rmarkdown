@@ -45,6 +45,8 @@ unregister <- function() {
 }
 ```
 
+
+
 ## Statement of Purpose
 
 Like its namesake vessel, the *Spaceship Titanic* encountered tragedy when several of its passengers were warped to an alternate dimension during flight! This analysis is a post-mortem on the flight and passenger list so that we may better understand who is at risk for interdimensional transport during spaceflight and can take future precautionary measures.
@@ -63,17 +65,23 @@ In any case, space travel is an important venture for humanity at this point in 
 
 The original data set on the passengers contained `r data %>% nrow()` passengers and `r data %>% ncol()` features (variables). We can see the first-few passengers'-worth of data printed out below.
 
+
+
 ```{r}
 data %>%
   head() %>%
   kable()
 ```
 
+
+
 That data was split into a collection of `r train %>% nrow()` training observations and `r test %>% nrow()` test observations for validating our final model's performance. Care was taken to ensure that the passengers who were *transported* to an alternate dimension are proportionally represented across the *training* and *test* sets.
 
 ### Univariate Analyses
 
 Since our goal is to understand who was transported to an alternate dimension during flight and perhaps gain some insight as to why they were transported, we’ll start by understanding the transported variable and the distributions of the other variables available to us.
+
+
 
 ```{r}
 train %>%
@@ -93,7 +101,11 @@ pct_transported <- train %>%
   pull(pct)
 ```
 
+
+
 The percentage of passengers transported in the training set is about `r round(pct_transported, 2)`%. Let’s look at the distributions of the other categorical variables in the data set.
+
+
 
 ```{r}
 p1 <- train %>%
@@ -137,11 +149,15 @@ p4 <- train %>%
 (p1 + p2) / (p3 + p4)
 ```
 
+
+
 From the top-left plot, we see that the majority of passengers board on Earth, while fewer passengers board on Europa and Mars. Some passengers have no boarding planet information (`NA`) – perhaps these passengers are crew members. In the top-right plot, we see that nearly 2/3 of passengers choose the Cryo Sleep option, while around 1/3 do not. Again, some passengers have missing data here. The distribution of destination planet is shown in the lower-right, and tells us that the most popular destination (by a large margin) is TRAPPIST-1e. The only other two destination planets are PSO J318.5-22 and 55 Cancri e. As in the previous plots, some passengers do not have an identified destination. Finally, the proportion of passengers with VIP status is about 2.23.
 
 In each of the plots, we identified several passengers with missing values. There are 0 passengers missing information for all four of these variables. This means that our earlier conjecture about those passengers being crew is unlikely.
 
 Let’s continue on to view the distributions of the numerical predictors available to us. We’ll start with the distribution of passenger ages.
+
+
 
 ```{r}
 #| message: false
@@ -158,7 +174,11 @@ train %>%
   )
 ```
 
+
+
 The plot above shows a [near] 0-inflated distribution. That is, there is an inflated number of observations near 0, given the shape of the rest of the distribution. Ages are right-skewed, with a median passenger age of 27 years old. Next we’ll look at the distribution of room service charges.
+
+
 
 ```{r}
 #| message: false
@@ -196,7 +216,11 @@ p2 <- train %>%
 p1 + p2
 ```
 
+
+
 Both of the plots above show the distribution of room service expenditures. From the plot on the left, we can see that the distribution is very strongly right-skewed. The majority of passengers spent very little on room service, but there were some passengers who ran up extremely large tabs! The plot on the right shows the same variable but on a logarithmic scale. This particular transformation ignores passengers who did not spend any money on room service. From this plot, we actually see that the median room service expenditure among passengers who utilized room service is quite high – it is about `r median(train$room_service)`. We’ll continue our exploration of the available numerical features below, by working with the expenditures at the food court, shopping mall, spa, and VR deck. All of these are right skewed so we’ll just show the distributions on a logarithmic scale.
+
+
 
 ```{r}
 #| warning: false
@@ -245,7 +269,11 @@ p_vr <- train %>%
 (p_food + p_shop) / (p_spa + p_vr)
 ```
 
+
+
 The distributions of these variables are all quite similar to one another. The distributions are skewed and 0-inflated. The distributions remain left-skewed even when plotted on a logarithmic scale and the observations at 0 are removed. The mean, median, standard deviation, and interquartile range for each expenditure venue are reported below without the removal of those zero observations.
+
+
 
 ```{r}
 train %>%
@@ -262,7 +290,11 @@ train %>%
   kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
+
+
 The same metrics are reported below after removal of the zero expenditure values. That is, the summary metrics reported below consider only passengers who utilized the corresponding services. These values will align with measures indicated from the log-scale plots above.
+
+
 
 ```{r}
 train %>%
@@ -280,7 +312,11 @@ train %>%
   kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
+
+
 Below is a visual representation of the distributions for these expenditure variables with the observations at 0 expenditure removed.
+
+
 
 ```{r}
 #| message: false
@@ -303,9 +339,13 @@ train %>%
   theme(legend.position = "None")
 ```
 
+
+
 ### Multivariate Analyses
 
 Now that we understand the individual distributions of the variables, its time to look at how these predictors are associated with out response variable (transported). We’ll begin by looking for associations between transported and the categorical variables.
+
+
 
 ```{r}
 p_home <- train %>%
@@ -350,9 +390,13 @@ p_vip <- train %>%
 (p_home + p_cryo) / (p_destination + p_vip)
 ```
 
+
+
 From the four plots above, we have the following takeaways. First, the plot on the left shows the passengers from Europa were much more likely to be transported than passengers from Mars or Earth. Passengers from Earth had a less than 50% transport rate while passengers from Mars had a slightly larger than 50% transport rate. Passengers in Cryo Sleep had an extremely elevated likelihood of transport than those who did not take advantage of Cryo Sleep. There were slight differences in transport rates by destination and by VIP status, but the choice to undergo Cryo Sleep seems to have been the largest influence over whether passengers were transported or not.
 
 Now we’ll consider how the numerical features may be associated with the `transported` status of passengers.
+
+
 
 ```{r}
 #| message: false
@@ -375,6 +419,8 @@ train %>%
        y = "")
 ```
 
+
+
 In the group of plots appearing above, we see that higher food court and shopping mall expenditures were associate with those passengers who were transported than those who were not. Those individuals not being transported had higher room service, spa, and VR deck expenditures on average than those who were not transported.
 
 As a result of this exploratory analysis, we’ve identified several important insights as we proceed to the model construction phase of this analysis. Firstly, about half of passengers were transported to an alternate dimension while the other half were transported safely. All of the numerical features are very heavily right-skewed aside from age. The variable most strongly associated with whether or not a passenger was transported may be the choice to Cryo Sleep during the flight. Other variables showed associations as well, but were less pronounced.
@@ -385,6 +431,8 @@ As a result of this exploratory analysis, we’ve identified several important i
 ### Statistical Learning
 
 #### Logistic Regression
+
+
 
 ```{r}
 # Build specification
@@ -419,6 +467,7 @@ mutate(
   odds_upper = exp(estimate + 2*std.error)
 )
 ```
+
 ```{r}
 complex_log_reg_rec <- log_reg_rec %>%
   step_interact(~ food_court:starts_with("home_planet"))
@@ -485,12 +534,17 @@ mfx %>%
   theme(legend.position = "none")
 ```
 
+
+
 #### Confusion Matrix
+
+
 ```{r}
 log_reg_fit |>
   augment(train) |> # Attaches predictions to a data set
   conf_mat(transported, .pred_class) # Compare the truth to the prediction
 ```
+
 ```{r}
 # Created a new column called correct-flag, writes how the prediction was incorrect or yes if we were correct
 log_reg_fit |> # Regression model that can help predict data
@@ -507,12 +561,18 @@ log_reg_fit |> # Regression model that can help predict data
 ```
 
 
+
+
 ### Machine Learning
 
 If a person or observation belongs to a class we worry about (the transported class) we want to build a model that identifies them as often as possible, because we don't want to lose people. We are going the ethics route of maybe losing money by not selling a ticket to someone who actually wouldn't get transported, but we are putting safety first.
+
+
 ```{r}
 train_folds <- vfold_cv(train, v = 10, strata = transported)
 ```
+
+
 
 
 We are going to pay attention to RECALL.
@@ -520,6 +580,8 @@ We are going to pay attention to RECALL.
 #### Logistic Regression
 
 Mean is the approximated accuracy for each metric. Accuracy itself is around 79%, precision will be around 79%, and recall will be about 77%.
+
+
 ```{r}
 # Set metrics
 my_metrics <- metric_set(accuracy, precision, recall)
@@ -535,7 +597,11 @@ log_reg_cv_results |>
   collect_metrics()
 ```
 
+
+
 ##### Hyperparameter Tuning
+
+
 ```{r}
 log_reg_spec <- logistic_reg(penalty = tune(), mixture = tune()) |>
   set_engine("glmnet") |>
@@ -555,7 +621,11 @@ log_reg_tune_wf <- workflow() |>
   add_recipe(log_reg_tune_rec)
 ```
 
+
+
 Tuning our penalty and mixture hyper parameters
+
+
 ```{r}
 # Let's tune our workflow over a random space filling grid
 log_reg_tune_results <- log_reg_tune_wf |>
@@ -580,7 +650,11 @@ log_reg_seq_tune_results |>
   show_best(n = 10, metric = "recall")
 ```
 
+
+
 ### Vector Support Machine
+
+
 
 ```{r}
 svm_linear_spec <- svm_linear(cost = tune()) |> # Linear SVM
@@ -603,7 +677,11 @@ svm_wf <- workflow() |>
 
 ```
 
+
+
 ##### Hyperparameter Tuning
+
+
 ```{r}
 n_cores <- parallel::detectCores()
 cl <- parallel::makeCluster(n_cores - 1, type = "PSOCK")
@@ -648,9 +726,12 @@ best_svm_fit |>
 ``` 
 
 
+
+
 ## Conclusion
 
 From looking at the mean on both the Support Vector Machine and the Logistic Regression Model, it is clear that the Logistic Regression Model is better at predicting transported victims. The SVM comes in at .7807, while the LRM is highest at .8702. There is a large percentage point difference, which means we should likely steer clear from using SVM for predictions. This is likely due to the lack of utilization of categorical variables in the SVM. Because the SVM measures distance, it isn't useful to use nominal predictors. However, in the LRM, the use of these categorical variables makes it more accurate when predicting the recall metric. 
+
 
 
 
