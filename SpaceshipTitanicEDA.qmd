@@ -51,9 +51,7 @@ Like its namesake vessel, the *Spaceship Titanic* encountered tragedy when sever
 
 ## Executive Summary
 
-:::{.callout-note}
-Intentionally left blank, for now. This is the last section to be written.
-:::
+This document's goal is to understand whether logistic regression or vector support machines would be better for accuracy on the recall metric. This will be done by first an exploratory data analysis, model construction (machine and statistical, with hyperperameter tuning, and then a conclusion with a result analysis.
 
 ## Introduction
 
@@ -383,21 +381,6 @@ As a result of this exploratory analysis, we’ve identified several important i
 
 ## Model Construction and Assessment
 
-:::{.callout-important}
-## Statistical Learning versus Machine Learning
-
-There are two competing objectives that we can have in model construction. 
-
-+ **Statistical Learning:** We build models with the intent of discovering and interpreting associations between our available predictors and the response.
-  
-  + Fits models and then uses $p$-values to identify significant predictors, confidence intervals for coefficients, etc.
-
-+ **Machine Learning:** We build models with the intent of making predictions as accurately as possible. 
-
-  + Uses methods like *cross-validation* for hyperparameter tuning and performance estimation
-
-You do not necessarily need to choose just one approach or the other. Perhaps the problems/challenges you’ve set out to solve would benefit from both descriptive and predictive models. In this case, just make clear to the reader when you are switching between objectives.
-:::
 
 ### Statistical Learning
 
