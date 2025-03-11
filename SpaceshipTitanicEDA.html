@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Audrey Saidel">
-<meta name="dcterms.date" content="2025-02-03">
+<meta name="dcterms.date" content="2025-03-08">
 
 <title>Spaceship Titanic Investigation</title>
 <style>
@@ -74,35 +74,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="SpaceshipTitanicEDA_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -126,10 +97,9 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#statistical-learning" id="toc-statistical-learning" class="nav-link" data-scroll-target="#statistical-learning">Statistical Learning</a></li>
   <li><a href="#machine-learning" id="toc-machine-learning" class="nav-link" data-scroll-target="#machine-learning">Machine Learning</a></li>
+  <li><a href="#vector-support-machine" id="toc-vector-support-machine" class="nav-link" data-scroll-target="#vector-support-machine">Vector Support Machine</a></li>
   </ul></li>
-  <li><a href="#model-interpretation-and-inference" id="toc-model-interpretation-and-inference" class="nav-link" data-scroll-target="#model-interpretation-and-inference">Model Interpretation and Inference</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
 </div>
@@ -161,14 +131,14 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 3, 2025</p>
+      <p class="date">March 8, 2025</p>
     </div>
   </div>
   
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">February 3, 2025</p>
+      <p class="date-modified">March 11, 2025</p>
     </div>
   </div>
     
@@ -201,7 +171,12 @@ window.Quarto = {
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>data_splits <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(data, <span class="at">prop =</span> <span class="fl">0.8</span>, <span class="at">strata =</span> transported)</span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">training</span>(data_splits)</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> <span class="fu">testing</span>(data_splits)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> <span class="fu">testing</span>(data_splits)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>unregister <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  env <span class="ot">&lt;-</span> foreach<span class="sc">:::</span>.foreachGlobals</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>(<span class="at">name=</span>env), <span class="at">pos=</span>env)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <section id="statement-of-purpose" class="level2">
@@ -210,19 +185,7 @@ window.Quarto = {
 </section>
 <section id="executive-summary" class="level2">
 <h2 class="anchored" data-anchor-id="executive-summary">Executive Summary</h2>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Intentionally left blank, for now. This is the last section to be written.</p>
-</div>
-</div>
+<p>This document’s goal is to understand whether logistic regression or vector support machines would be better for accuracy on the recall metric. This will be done by first an exploratory data analysis, model construction (machine and statistical, with hyperperameter tuning, and then a conclusion with a result analysis.</p>
 </section>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
@@ -613,38 +576,38 @@ Note
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">food_court</td>
-<td style="text-align: right;">461.1856</td>
+<td style="text-align: right;">469.2695</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">1647.0554</td>
-<td style="text-align: right;">69.75</td>
+<td style="text-align: right;">1648.6213</td>
+<td style="text-align: right;">80.00</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">room_service</td>
-<td style="text-align: right;">222.7375</td>
+<td style="text-align: right;">222.3388</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">668.3168</td>
-<td style="text-align: right;">47.00</td>
+<td style="text-align: right;">672.6028</td>
+<td style="text-align: right;">46.00</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">shopping_mall</td>
-<td style="text-align: right;">167.9633</td>
+<td style="text-align: right;">168.4468</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">599.3795</td>
-<td style="text-align: right;">25.00</td>
+<td style="text-align: right;">528.1636</td>
+<td style="text-align: right;">27.25</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">spa</td>
-<td style="text-align: right;">310.5437</td>
+<td style="text-align: right;">309.0891</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">1139.6058</td>
-<td style="text-align: right;">59.00</td>
+<td style="text-align: right;">1143.1993</td>
+<td style="text-align: right;">58.50</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">vr_deck</td>
-<td style="text-align: right;">306.4541</td>
+<td style="text-align: right;">308.6916</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">1181.4179</td>
-<td style="text-align: right;">46.00</td>
+<td style="text-align: right;">1146.8416</td>
+<td style="text-align: right;">47.00</td>
 </tr>
 </tbody>
 </table>
@@ -684,38 +647,38 @@ Note
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">food_court</td>
-<td style="text-align: right;">1289.0468</td>
-<td style="text-align: right;">395</td>
-<td style="text-align: right;">2552.8137</td>
-<td style="text-align: right;">1231.50</td>
+<td style="text-align: right;">1307.1687</td>
+<td style="text-align: right;">402</td>
+<td style="text-align: right;">2545.0389</td>
+<td style="text-align: right;">1238.5</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">room_service</td>
-<td style="text-align: right;">641.9362</td>
-<td style="text-align: right;">300</td>
-<td style="text-align: right;">1009.1550</td>
-<td style="text-align: right;">783.00</td>
+<td style="text-align: right;">645.6650</td>
+<td style="text-align: right;">309</td>
+<td style="text-align: right;">1020.1293</td>
+<td style="text-align: right;">787.0</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">shopping_mall</td>
-<td style="text-align: right;">493.2060</td>
-<td style="text-align: right;">185</td>
-<td style="text-align: right;">945.9047</td>
-<td style="text-align: right;">660.00</td>
+<td style="text-align: right;">491.7923</td>
+<td style="text-align: right;">194</td>
+<td style="text-align: right;">809.6771</td>
+<td style="text-align: right;">666.0</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">spa</td>
-<td style="text-align: right;">835.8343</td>
+<td style="text-align: right;">825.8967</td>
 <td style="text-align: right;">232</td>
-<td style="text-align: right;">1748.4613</td>
-<td style="text-align: right;">736.50</td>
+<td style="text-align: right;">1750.9869</td>
+<td style="text-align: right;">734.0</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">vr_deck</td>
-<td style="text-align: right;">864.3478</td>
-<td style="text-align: right;">254</td>
-<td style="text-align: right;">1858.8493</td>
-<td style="text-align: right;">776.25</td>
+<td style="text-align: right;">872.8079</td>
+<td style="text-align: right;">266</td>
+<td style="text-align: right;">1796.4442</td>
+<td style="text-align: right;">800.0</td>
 </tr>
 </tbody>
 </table>
@@ -842,51 +805,603 @@ Note
 </section>
 <section id="model-construction-and-assessment" class="level2">
 <h2 class="anchored" data-anchor-id="model-construction-and-assessment">Model Construction and Assessment</h2>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Statistical Learning versus Machine Learning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>There are two competing objectives that we can have in model construction.</p>
-<ul>
-<li><p><strong>Statistical Learning:</strong> We build models with the intent of discovering and interpreting associations between our available predictors and the response.</p>
-<ul>
-<li>Fits models and then uses <span class="math inline">\(p\)</span>-values to identify significant predictors, confidence intervals for coefficients, etc.</li>
-</ul></li>
-<li><p><strong>Machine Learning:</strong> We build models with the intent of making predictions as accurately as possible.</p>
-<ul>
-<li>Uses methods like <em>cross-validation</em> for hyperparameter tuning and performance estimation</li>
-</ul></li>
-</ul>
-<p>You do not necessarily need to choose just one approach or the other. Perhaps the problems/challenges you’ve set out to solve would benefit from both descriptive and predictive models. In this case, just make clear to the reader when you are switching between objectives.</p>
-</div>
-</div>
 <section id="statistical-learning" class="level3">
 <h3 class="anchored" data-anchor-id="statistical-learning">Statistical Learning</h3>
+<p>We will now use statistical learning through the lens of logistic regression. We are trying to determine which individuals have the highest chance of being transported off the spaceship to another location.</p>
 <section id="logistic-regression" class="level4">
 <h4 class="anchored" data-anchor-id="logistic-regression">Logistic Regression</h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build specification</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>log_reg_spec <span class="ot">&lt;-</span> <span class="fu">logistic_reg</span>() <span class="sc">|&gt;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"glm"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Recipe</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>log_reg_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(transported <span class="sc">~</span> ., <span class="at">data =</span> train) <span class="sc">|&gt;</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_rm</span>(passenger_id) <span class="sc">|&gt;</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_rm</span>(name) <span class="sc">|&gt;</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_rm</span>(cabin)<span class="sc">|&gt;</span>  <span class="co"># Ignore it for now </span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_impute_median</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">|&gt;</span> <span class="co"># Mean is too sensitive to outliers to use</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_impute_mode</span>(<span class="fu">all_nominal_predictors</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_dummy</span>(<span class="fu">all_nominal_predictors</span>())</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Workflow</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>log_reg_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(log_reg_spec) <span class="sc">|&gt;</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(log_reg_rec) </span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit it</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>log_reg_fit <span class="ot">&lt;-</span> log_reg_wf <span class="sc">|&gt;</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>log_reg_fit <span class="sc">|&gt;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">extract_fit_engine</span>() <span class="sc">|&gt;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>() <span class="sc">|&gt;</span> <span class="co"># Data frame</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">odds_ratio =</span> <span class="fu">exp</span>(estimate),</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">oods_lower =</span> <span class="fu">exp</span>(estimate <span class="sc">-</span> <span class="dv">2</span><span class="sc">*</span>std.error), <span class="co"># 95% Confidence interval around the estimate</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">odds_upper =</span> <span class="fu">exp</span>(estimate <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>std.error)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 13 × 8
+   term   estimate std.error statistic  p.value odds_ratio oods_lower odds_upper
+   &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;
+ 1 (Inte…  3.04e-1 0.104          2.93 3.42e- 3      1.35       1.10       1.67 
+ 2 age    -8.68e-3 0.00221       -3.92 8.81e- 5      0.991      0.987      0.996
+ 3 room_… -1.50e-3 0.000103     -14.5  1.16e-47      0.999      0.998      0.999
+ 4 food_…  5.40e-4 0.0000434     12.5  1.30e-35      1.00       1.00       1.00 
+ 5 shopp…  4.75e-4 0.0000716      6.64 3.09e-11      1.00       1.00       1.00 
+ 6 spa    -1.92e-3 0.000115     -16.7  2.70e-62      0.998      0.998      0.998
+ 7 vr_de… -1.75e-3 0.000107     -16.4  1.25e-60      0.998      0.998      0.998
+ 8 home_…  1.99e+0 0.126         15.7  8.93e-56      7.31       5.68       9.42 
+ 9 home_…  6.60e-1 0.0851         7.75 9.40e-15      1.93       1.63       2.29 
+10 cryo_…  1.25e+0 0.0792        15.8  5.91e-56      3.49       2.97       4.08 
+11 desti… -4.26e-1 0.124         -3.43 5.93e- 4      0.653      0.509      0.837
+12 desti… -4.32e-1 0.0874        -4.94 7.92e- 7      0.649      0.545      0.773
+13 vip_y… -3.21e-1 0.268         -1.20 2.30e- 1      0.725      0.425      1.24 </code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>complex_log_reg_rec <span class="ot">&lt;-</span> log_reg_rec <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_interact</span>(<span class="sc">~</span> food_court<span class="sc">:</span><span class="fu">starts_with</span>(<span class="st">"home_planet"</span>))</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>complex_log_reg_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(log_reg_spec) <span class="sc">%&gt;%</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(complex_log_reg_rec)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>complex_log_reg_fit <span class="ot">&lt;-</span> complex_log_reg_wf <span class="sc">%&gt;%</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>complex_log_reg_fit <span class="sc">%&gt;%</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 43%">
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 14%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">estimate</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">0.1997846</td>
+<td style="text-align: right;">0.1059088</td>
+<td style="text-align: right;">1.886383</td>
+<td style="text-align: right;">0.0592434</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">-0.0103304</td>
+<td style="text-align: right;">0.0022482</td>
+<td style="text-align: right;">-4.594902</td>
+<td style="text-align: right;">0.0000043</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">room_service</td>
+<td style="text-align: right;">-0.0014293</td>
+<td style="text-align: right;">0.0001024</td>
+<td style="text-align: right;">-13.960574</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">food_court</td>
+<td style="text-align: right;">0.0010659</td>
+<td style="text-align: right;">0.0001108</td>
+<td style="text-align: right;">9.622199</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">shopping_mall</td>
+<td style="text-align: right;">0.0005195</td>
+<td style="text-align: right;">0.0000733</td>
+<td style="text-align: right;">7.090094</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">spa</td>
+<td style="text-align: right;">-0.0018018</td>
+<td style="text-align: right;">0.0001129</td>
+<td style="text-align: right;">-15.953816</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">vr_deck</td>
+<td style="text-align: right;">-0.0016557</td>
+<td style="text-align: right;">0.0001053</td>
+<td style="text-align: right;">-15.729530</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">home_planet_Europa</td>
+<td style="text-align: right;">2.1493469</td>
+<td style="text-align: right;">0.1315649</td>
+<td style="text-align: right;">16.336781</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">home_planet_Mars</td>
+<td style="text-align: right;">0.7519218</td>
+<td style="text-align: right;">0.0880754</td>
+<td style="text-align: right;">8.537252</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cryo_sleep_yes</td>
+<td style="text-align: right;">1.3618943</td>
+<td style="text-align: right;">0.0827565</td>
+<td style="text-align: right;">16.456651</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">destination_PSO.J318.5.22</td>
+<td style="text-align: right;">-0.4072469</td>
+<td style="text-align: right;">0.1244979</td>
+<td style="text-align: right;">-3.271115</td>
+<td style="text-align: right;">0.0010712</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">destination_TRAPPIST.1e</td>
+<td style="text-align: right;">-0.4377525</td>
+<td style="text-align: right;">0.0876346</td>
+<td style="text-align: right;">-4.995204</td>
+<td style="text-align: right;">0.0000006</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">vip_yes</td>
+<td style="text-align: right;">-0.2859076</td>
+<td style="text-align: right;">0.2662431</td>
+<td style="text-align: right;">-1.073859</td>
+<td style="text-align: right;">0.2828857</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">food_court_x_home_planet_Europa</td>
+<td style="text-align: right;">-0.0006116</td>
+<td style="text-align: right;">0.0001187</td>
+<td style="text-align: right;">-5.153671</td>
+<td style="text-align: right;">0.0000003</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">food_court_x_home_planet_Mars</td>
+<td style="text-align: right;">-0.0009364</td>
+<td style="text-align: right;">0.0002836</td>
+<td style="text-align: right;">-3.302133</td>
+<td style="text-align: right;">0.0009595</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">crossing</span>(</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">passenger_id =</span> <span class="cn">NA</span>,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">home_planet =</span> <span class="st">"Europa"</span>,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cryo_sleep =</span> <span class="st">"no"</span>,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cabin =</span> <span class="cn">NA</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">destination =</span> <span class="st">"TRAPPIST-1e"</span>,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">mean</span>(train<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">vip =</span> <span class="st">"no"</span>,</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">room_service =</span> <span class="fu">mean</span>(train<span class="sc">$</span>room_service, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">food_court =</span> <span class="fu">mean</span>(train<span class="sc">$</span>food_court, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">shopping_mall =</span> <span class="fu">mean</span>(train<span class="sc">$</span>shopping_mall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">spa =</span> <span class="fu">mean</span>(train<span class="sc">$</span>spa, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">vr_deck =</span> <span class="fu">seq</span>(<span class="fu">min</span>(train<span class="sc">$</span>vr_deck, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>            <span class="fu">max</span>(train<span class="sc">$</span>vr_deck, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">by =</span> <span class="dv">1</span>),</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="cn">NA</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>new_data_baked <span class="ot">&lt;-</span> complex_log_reg_rec <span class="sc">%&gt;%</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bake</span>(new_data)</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>mfx <span class="ot">&lt;-</span> <span class="fu">slopes</span>(log_reg_fit <span class="sc">%&gt;%</span> <span class="fu">extract_fit_parsnip</span>(),</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>              <span class="at">newdata =</span> new_data_baked,</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>              <span class="at">variables =</span> <span class="st">"vr_deck"</span>,</span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>              <span class="at">type =</span> <span class="st">"prob"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>()</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>mfx <span class="sc">%&gt;%</span></span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(group <span class="sc">==</span> <span class="st">"yes"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(vr_deck, estimate, conf.low, conf.high) <span class="sc">%&gt;%</span></span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> vr_deck, <span class="at">y =</span> estimate), <span class="at">color =</span> <span class="st">"purple"</span>, <span class="at">lty =</span> <span class="st">"dashed"</span>, <span class="at">lwd =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x =</span> vr_deck, <span class="at">ymin =</span> conf.low, <span class="at">ymax =</span> conf.high),</span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>              <span class="at">fill =</span> <span class="st">"grey"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"VR Deck"</span>,</span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Marginal Effect"</span>,</span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Marginal Effects of Unit Increase in VR Deck Spending"</span>) <span class="sc">+</span> </span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="SpaceshipTitanicEDA_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mfx <span class="sc">%&gt;%</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(group <span class="sc">==</span> <span class="st">"yes"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(vr_deck, estimate, conf.low, conf.high) <span class="sc">%&gt;%</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> vr_deck, <span class="at">y =</span> estimate), <span class="at">color =</span> <span class="st">"purple"</span>, <span class="at">lty =</span> <span class="st">"dashed"</span>, <span class="at">lwd =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x =</span> vr_deck, <span class="at">ymin =</span> conf.low, <span class="at">ymax =</span> conf.high),</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">fill =</span> <span class="st">"grey"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"VR Deck"</span>,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Marginal Effect"</span>,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Marginal Effects of Unit Increase in VR Deck Spending"</span>) <span class="sc">+</span> </span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5000</span>)) <span class="sc">+</span> </span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="SpaceshipTitanicEDA_files/figure-html/unnamed-chunk-15-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="confusion-matrix" class="level4">
+<h4 class="anchored" data-anchor-id="confusion-matrix">Confusion Matrix</h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>log_reg_fit <span class="sc">|&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>(train) <span class="sc">|&gt;</span> <span class="co"># Attaches predictions to a data set</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">conf_mat</span>(transported, .pred_class) <span class="co"># Compare the truth to the prediction</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>          Truth
+Prediction   no  yes
+       no  2649  687
+       yes  803 2815</code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Created a new column called correct-flag, writes how the prediction was incorrect or yes if we were correct</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>log_reg_fit <span class="sc">|&gt;</span> <span class="co"># Regression model that can help predict data</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>(train) <span class="sc">|&gt;</span> </span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>   <span class="co"># correct_flag = ifelse(transported == .pred_class, "yes", ifelse(transported == "yes", "false-negative", "false-positive"))</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a> <span class="co"># ) |&gt;</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">correct_flag =</span> <span class="fu">case_when</span>(transported <span class="sc">==</span> .pred_class <span class="sc">~</span> <span class="st">"yes"</span>, transported <span class="sc">==</span> <span class="st">"yes"</span> <span class="sc">~</span> <span class="st">"false-negative"</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"false_positive"</span>)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(correct_flag) <span class="sc">|&gt;</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">median_food_spend =</span> <span class="fu">median</span>(food_court, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  correct_flag   median_food_spend
+  &lt;chr&gt;                      &lt;dbl&gt;
+1 false-negative                 2
+2 false_positive                 0
+3 yes                            0</code></pre>
+</div>
+</div>
 </section>
 </section>
 <section id="machine-learning" class="level3">
 <h3 class="anchored" data-anchor-id="machine-learning">Machine Learning</h3>
+<p>If a person or observation belongs to a class we worry about (the transported class) we want to build a model that identifies them as often as possible, because we don’t want to lose people. We are going the ethics route of maybe losing money by not selling a ticket to someone who actually wouldn’t get transported, but we are putting safety first.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>train_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(train, <span class="at">v =</span> <span class="dv">10</span>, <span class="at">strata =</span> transported)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>We are going to pay attention to RECALL.</p>
 <section id="logistic-regression-1" class="level4">
 <h4 class="anchored" data-anchor-id="logistic-regression-1">Logistic Regression</h4>
+<p>Mean is the approximated accuracy for each metric. Accuracy itself is around 79%, precision will be around 79%, and recall will be about 77%.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set metrics</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>my_metrics <span class="ot">&lt;-</span> <span class="fu">metric_set</span>(accuracy, precision, recall)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Cross Validate this base model</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>log_reg_cv_results <span class="ot">&lt;-</span> log_reg_wf <span class="sc">|&gt;</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit_resamples</span>(</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">resamples =</span> train_folds, <span class="at">metrics =</span> my_metrics</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>→ A | warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>There were issues with some computations   A: x1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>There were issues with some computations   A: x7</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>There were issues with some computations   A: x10</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Collect the results, the results are not a fitted model, only ten sets of performance metrics</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>log_reg_cv_results <span class="sc">|&gt;</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_metrics</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 6
+  .metric   .estimator  mean     n std_err .config             
+  &lt;chr&gt;     &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
+1 accuracy  binary     0.784    10 0.00536 Preprocessor1_Model1
+2 precision binary     0.793    10 0.00695 Preprocessor1_Model1
+3 recall    binary     0.764    10 0.00712 Preprocessor1_Model1</code></pre>
+</div>
+</div>
+<section id="hyperparameter-tuning" class="level5">
+<h5 class="anchored" data-anchor-id="hyperparameter-tuning">Hyperparameter Tuning</h5>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>log_reg_spec <span class="ot">&lt;-</span> <span class="fu">logistic_reg</span>(<span class="at">penalty =</span> <span class="fu">tune</span>(), <span class="at">mixture =</span> <span class="fu">tune</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"glmnet"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>log_reg_tune_rec <span class="ot">&lt;-</span>  <span class="fu">recipe</span>(transported <span class="sc">~</span> ., <span class="at">data =</span> train) <span class="sc">|&gt;</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_rm</span>(passenger_id) <span class="sc">|&gt;</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_rm</span>(name) <span class="sc">|&gt;</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_rm</span>(cabin)<span class="sc">|&gt;</span>  <span class="co"># Ignore it for now </span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_impute_median</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">|&gt;</span> <span class="co"># Mean is too sensitive to outliers to use</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_impute_mode</span>(<span class="fu">all_nominal_predictors</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_dummy</span>(<span class="fu">all_nominal_predictors</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_numeric_predictors</span>())</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>log_reg_tune_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(log_reg_spec) <span class="sc">|&gt;</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(log_reg_tune_rec)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Tuning our penalty and mixture hyper parameters</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's tune our workflow over a random space filling grid</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>log_reg_tune_results <span class="ot">&lt;-</span> log_reg_tune_wf <span class="sc">|&gt;</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tune_grid</span>(</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">resamples =</span> train_folds,</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">grid =</span> <span class="dv">12</span>,</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">metrics =</span> <span class="fu">metric_set</span>(accuracy, precision, recall)</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>log_reg_tune_results <span class="sc">|&gt;</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_best</span>(<span class="at">n =</span> <span class="dv">10</span>, <span class="at">metric =</span> <span class="st">"recall"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 8
+    penalty mixture .metric .estimator  mean     n std_err .config              
+      &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;                
+ 1 5.50e- 1  0.0836 recall  binary     0.864    10 0.00359 Preprocessor1_Model01
+ 2 4.85e- 2  0.903  recall  binary     0.857    10 0.00322 Preprocessor1_Model11
+ 3 1.49e- 2  0.357  recall  binary     0.818    10 0.00503 Preprocessor1_Model04
+ 4 5.21e- 4  0.518  recall  binary     0.767    10 0.00684 Preprocessor1_Model06
+ 5 6.66e- 7  0.173  recall  binary     0.767    10 0.00702 Preprocessor1_Model02
+ 6 8.08e- 9  0.249  recall  binary     0.767    10 0.00702 Preprocessor1_Model03
+ 7 4.74e- 8  0.375  recall  binary     0.767    10 0.00702 Preprocessor1_Model05
+ 8 1.92e- 6  0.673  recall  binary     0.767    10 0.00717 Preprocessor1_Model08
+ 9 5.54e- 5  0.713  recall  binary     0.767    10 0.00717 Preprocessor1_Model09
+10 4.16e-10  0.835  recall  binary     0.767    10 0.00717 Preprocessor1_Model10</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>log_reg_seq_tune_results <span class="ot">&lt;-</span> log_reg_tune_wf <span class="sc">|&gt;</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tune_bayes</span>(</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">resamples =</span> train_folds,</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">iter =</span> <span class="dv">20</span>, <span class="co"># How long we want to spend finding the best hyper parameters, process will stop after 10 w/ no improvement</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">metrics =</span> <span class="fu">metric_set</span>(recall),</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">initial =</span> log_reg_tune_results <span class="co"># Starts from the best hyper parameter from tuning result</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>! No improvement for 10 iterations; returning current results.</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>log_reg_seq_tune_results <span class="sc">|&gt;</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_best</span>(<span class="at">n =</span> <span class="dv">10</span>, <span class="at">metric =</span> <span class="st">"recall"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 9
+    penalty mixture .metric .estimator  mean     n std_err .config         .iter
+      &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;           &lt;int&gt;
+ 1 5.50e- 1  0.0836 recall  binary     0.864    10 0.00359 Preprocessor1_…     0
+ 2 7.78e- 1  0.0513 recall  binary     0.860    10 0.00363 Iter5               5
+ 3 4.85e- 2  0.903  recall  binary     0.857    10 0.00322 Preprocessor1_…     0
+ 4 4.08e- 2  0.593  recall  binary     0.844    10 0.00317 Iter9               9
+ 5 9.07e- 2  0.0562 recall  binary     0.839    10 0.00436 Iter8               8
+ 6 1.77e- 2  0.871  recall  binary     0.832    10 0.00429 Iter6               6
+ 7 1.49e- 2  0.357  recall  binary     0.818    10 0.00503 Preprocessor1_…     0
+ 8 2.20e- 3  0.870  recall  binary     0.780    10 0.00536 Iter2               2
+ 9 1.05e-10  0.0565 recall  binary     0.768    10 0.00672 Iter10             10
+10 5.21e- 4  0.518  recall  binary     0.767    10 0.00684 Preprocessor1_…     0</code></pre>
+</div>
+</div>
 </section>
 </section>
 </section>
-<section id="model-interpretation-and-inference" class="level2">
-<h2 class="anchored" data-anchor-id="model-interpretation-and-inference">Model Interpretation and Inference</h2>
+<section id="vector-support-machine" class="level3">
+<h3 class="anchored" data-anchor-id="vector-support-machine">Vector Support Machine</h3>
+<p>Now, let’s create a VSM to analyze the same metric as what we did in the logistic regression model. We can compare and contrast our model results after to see which one will be more accurate in predicting the recall metric.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>svm_linear_spec <span class="ot">&lt;-</span> <span class="fu">svm_linear</span>(<span class="at">cost =</span> <span class="fu">tune</span>()) <span class="sc">|&gt;</span> <span class="co"># Linear SVM</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"LiblineaR"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>svm_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(transported <span class="sc">~</span> ., <span class="at">data =</span> train) <span class="sc">|&gt;</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_rm</span>(passenger_id) <span class="sc">|&gt;</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_rm</span>(name) <span class="sc">|&gt;</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_rm</span>(cabin)<span class="sc">|&gt;</span> </span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_rm</span>(<span class="fu">all_nominal_predictors</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_impute_median</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_numeric_predictors</span>())</span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>svm_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span></span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(svm_linear_spec) <span class="sc">|&gt;</span></span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(svm_rec)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="hyperparameter-tuning-1" class="level5">
+<h5 class="anchored" data-anchor-id="hyperparameter-tuning-1">Hyperparameter Tuning</h5>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>n_cores <span class="ot">&lt;-</span> parallel<span class="sc">::</span><span class="fu">detectCores</span>()</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>cl <span class="ot">&lt;-</span> parallel<span class="sc">::</span><span class="fu">makeCluster</span>(n_cores <span class="sc">-</span> <span class="dv">1</span>, <span class="at">type =</span> <span class="st">"PSOCK"</span>)</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>doParallel<span class="sc">::</span><span class="fu">registerDoParallel</span>(cl)</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>tictoc<span class="sc">::</span><span class="fu">tic</span>()</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Tuning</span></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>svm_bayes_results <span class="ot">&lt;-</span> svm_wf <span class="sc">|&gt;</span></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tune_bayes</span>(</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">resamples =</span> train_folds,</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">iter =</span> <span class="dv">20</span>,  </span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">metrics =</span> <span class="fu">metric_set</span>(recall),</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">initial =</span> <span class="dv">10</span></span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>! No improvement for 10 iterations; returning current results.</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>79.64 sec elapsed</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>doParallel<span class="sc">::</span><span class="fu">stopImplicitCluster</span>()</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unregister</span>()</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>svm_bayes_results <span class="sc">|&gt;</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_metrics</span>() <span class="sc">|&gt;</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span>mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 22 × 8
+      cost .metric .estimator  mean     n std_err .config               .iter
+     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;                 &lt;int&gt;
+ 1 13.0    recall  binary     0.639    10 0.00895 Iter2                     2
+ 2  1.34   recall  binary     0.639    10 0.00877 Preprocessor1_Model01     0
+ 3  5.53   recall  binary     0.639    10 0.00877 Preprocessor1_Model02     0
+ 4  0.262  recall  binary     0.639    10 0.00877 Preprocessor1_Model05     0
+ 5 18.1    recall  binary     0.639    10 0.00877 Preprocessor1_Model06     0
+ 6  1.81   recall  binary     0.639    10 0.00877 Preprocessor1_Model08     0
+ 7  0.320  recall  binary     0.639    10 0.00877 Iter1                     1
+ 8  0.0889 recall  binary     0.639    10 0.00877 Iter7                     7
+ 9 20.4    recall  binary     0.639    10 0.00877 Iter8                     8
+10  1.09   recall  binary     0.639    10 0.00877 Iter11                   11
+# ℹ 12 more rows</code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>best_param_svm <span class="ot">&lt;-</span> svm_bayes_results <span class="sc">|&gt;</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select_best</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in select_best(svm_bayes_results): No value of `metric` was given;
+"recall" will be used.</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>best_svm <span class="ot">&lt;-</span> svm_wf <span class="sc">|&gt;</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_workflow</span>(</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>  best_param_svm</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>best_svm_fit <span class="ot">&lt;-</span> best_svm <span class="sc">|&gt;</span></span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(train)</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>best_svm_fit <span class="sc">|&gt;</span></span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_parsnip</span>() <span class="sc">|&gt;</span></span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 2
+  term          estimate
+  &lt;chr&gt;            &lt;dbl&gt;
+1 age           -0.00104
+2 room_service   0.537  
+3 food_court    -0.445  
+4 shopping_mall -0.0290 
+5 spa            0.986  
+6 vr_deck        0.888  
+7 Bias           0.215  </code></pre>
+</div>
+</div>
+</section>
+</section>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>From looking at the mean on both the Support Vector Machine and the Logistic Regression Model, it is clear that the Logistic Regression Model is better at predicting transported victims. The SVM comes in at .7807, while the LRM is highest at .8702. There is a large percentage point difference, which means we should likely steer clear from using SVM for predictions. This is likely due to the lack of utilization of categorical variables in the SVM. Because the SVM measures distance, it isn’t useful to use nominal predictors. However, in the LRM, the use of these categorical variables makes it more accurate when predicting the recall metric.</p>
 </section>
 
 </main>

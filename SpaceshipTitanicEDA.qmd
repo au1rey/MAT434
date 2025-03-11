@@ -384,6 +384,8 @@ As a result of this exploratory analysis, we’ve identified several important i
 
 ### Statistical Learning
 
+We will now use statistical learning through the lens of logistic regression. We are trying to determine which individuals have the highest chance of being transported off the spaceship to another location. 
+
 #### Logistic Regression
 
 ```{r}
@@ -439,53 +441,61 @@ complex_log_reg_fit %>%
 ```{r}
 new_data <- crossing(
   passenger_id = NA,
-  home_planet = c("Europa", "Earth", "Mars"),
+  home_planet = "Europa",
   cryo_sleep = "no",
   cabin = NA,
   destination = "TRAPPIST-1e",
   age = mean(train$age, na.rm = TRUE),
   vip = "no",
   room_service = mean(train$room_service, na.rm = TRUE),
-  food_court = seq(min(train$food_court, na.rm = TRUE),
-            max(train$food_court, na.rm = TRUE),
-            by = 1),
+  food_court = mean(train$food_court, na.rm = TRUE),
   shopping_mall = mean(train$shopping_mall, na.rm = TRUE),
   spa = mean(train$spa, na.rm = TRUE),
-  vr_deck = mean(train$vr_deck, na.rm = TRUE),
+  vr_deck = seq(min(train$vr_deck, na.rm = TRUE),
+            max(train$vr_deck, na.rm = TRUE),
+            by = 1),
   name = NA
 )
 
 new_data_baked <- complex_log_reg_rec %>%
   prep() %>%
   bake(new_data)
-mfx <- slopes(complex_log_reg_fit %>% extract_fit_parsnip(),
+
+mfx <- slopes(log_reg_fit %>% extract_fit_parsnip(),
               newdata = new_data_baked,
-              variables = "food_court",
+              variables = "vr_deck",
               type = "prob") %>%
   tibble()
 
+
 mfx %>%
   filter(group == "yes") %>%
-  mutate(home_planet = case_when(
-    home_planet_Europa == 1 ~ "Europa",
-    home_planet_Mars == 1 ~ "Mars",
-    TRUE ~ "Earth"
-  )) %>%
-  select(food_court, home_planet, estimate, conf.low, conf.high) %>%
+  select(vr_deck, estimate, conf.low, conf.high) %>%
   ggplot() +
-  geom_line(aes(x = food_court, y = estimate, color = home_planet), lty = "dashed", lwd = 1.5) +
-  geom_ribbon(aes(x = food_court, ymin = conf.low, ymax = conf.high, group = home_planet),
+  geom_line(aes(x = vr_deck, y = estimate), color = "purple", lty = "dashed", lwd = 1.5) +
+  geom_ribbon(aes(x = vr_deck, ymin = conf.low, ymax = conf.high),
               fill = "grey", alpha = 0.5) +
-  labs(x = "Food Court Spending",
+  labs(x = "VR Deck",
        y = "Marginal Effect",
-       title = "Marginal Effects of Unit Increase in Food Court Spending") + 
+       title = "Marginal Effects of Unit Increase in VR Deck Spending") + 
+  theme_bw()
+
+mfx %>%
+  filter(group == "yes") %>%
+  select(vr_deck, estimate, conf.low, conf.high) %>%
+  ggplot() +
+  geom_line(aes(x = vr_deck, y = estimate), color = "purple", lty = "dashed", lwd = 1.5) +
+  geom_ribbon(aes(x = vr_deck, ymin = conf.low, ymax = conf.high),
+              fill = "grey", alpha = 0.5) +
+  labs(x = "VR Deck",
+       y = "Marginal Effect",
+       title = "Marginal Effects of Unit Increase in VR Deck Spending") + 
   coord_cartesian(xlim = c(0, 5000)) + 
-  facet_wrap(~home_planet) + 
-  theme_bw() +
-  theme(legend.position = "none")
+  theme_bw()
 ```
 
 #### Confusion Matrix
+
 ```{r}
 log_reg_fit |>
   augment(train) |> # Attaches predictions to a data set
@@ -510,6 +520,7 @@ log_reg_fit |> # Regression model that can help predict data
 ### Machine Learning
 
 If a person or observation belongs to a class we worry about (the transported class) we want to build a model that identifies them as often as possible, because we don't want to lose people. We are going the ethics route of maybe losing money by not selling a ticket to someone who actually wouldn't get transported, but we are putting safety first.
+
 ```{r}
 train_folds <- vfold_cv(train, v = 10, strata = transported)
 ```
@@ -520,6 +531,7 @@ We are going to pay attention to RECALL.
 #### Logistic Regression
 
 Mean is the approximated accuracy for each metric. Accuracy itself is around 79%, precision will be around 79%, and recall will be about 77%.
+
 ```{r}
 # Set metrics
 my_metrics <- metric_set(accuracy, precision, recall)
@@ -581,6 +593,8 @@ log_reg_seq_tune_results |>
 ```
 
 ### Vector Support Machine
+
+Now, let's create a VSM to analyze the same metric as what we did in the logistic regression model. We can compare and contrast our model results after to see which one will be more accurate in predicting the recall metric.
 
 ```{r}
 svm_linear_spec <- svm_linear(cost = tune()) |> # Linear SVM

@@ -31,6 +31,8 @@ data_splits <- initial_split(data, 0.75, strata = priceRange)
 
 train <- training(data_splits)
 test <- testing(data_splits)
+
+unregister()
 ```
 # Statement of Purpose
 Zillow is a real estate market website that lists houses for sale in both the US and Canada. Zillow carries data on sale prices, rent prices, mortgage prices, locations, and house sizing details. This project seeks to construct predictive models on the listed price range of a property in the US. This project will enhance transparency in the real estate market by displaying the factors that impact listing price range. This can help buyers make informed decisions when buying a house, as well as help sellers figure out a practical price point to list their house at.
@@ -162,5 +164,144 @@ ggplot(train, aes(x = priceRange, y = avgSchoolRating, fill = priceRange)) +
   theme_minimal() +
   labs(title = "Comparison of Average School Rating by Price Range", x = "Price Range", y = "Average School Rating")
 
+```
+# Model Construction and Interpretation
+
+We will now use K-Nearest Neighbors (KNN) and decision trees—both multi-class models—to predict house price ranges. To enhance prediction accuracy, we will apply cross-validation and hyper-parameter tuning.
+  
+  Let's begin with the decision tree.
+
+## Decision Tree
+
+  First we need to create the decision tree workflow.
+```{r}
+# Specification
+dt_clf_spec <- decision_tree(min_n = tune(), tree_depth = tune()) |>
+  set_engine("rpart") |>
+  set_mode("classification")
+
+# Recipe
+dt_clf_rec <- recipe(priceRange ~., data = train) |>
+  step_rm(description) |>
+  step_rm(id) |>
+  step_dummy(all_nominal(), -all_outcomes()) 
+  
+
+# Workflow
+dt_clf_wf <- workflow() |>
+  add_model(dt_clf_spec) |>
+  add_recipe(dt_clf_rec)
+```
+
+### Tuning
+
+  First we need to create cross-validation folds.Because we used strata previously, we'll use it again here. Once we have our folds, we can begin tuning.
+```{r}
+train_folds <- vfold_cv(train, v = 10, strata = priceRange)
+```
+```{r}
+
+n_cores <- parallel::detectCores()
+cl <- parallel::makeCluster(n_cores - 1, type = "PSOCK")
+doParallel::registerDoParallel(cl)
+
+dt_tune_results <- dt_clf_wf |>
+  tune_bayes(
+    resamples = train_folds,
+    metrics = metric_set(mn_log_loss),
+    initial = 10, 
+    control = control_bayes(parallel_over = "everything")
+  )
+
+doParallel::stopImplicitCluster()
+unregister()
+```
+```{r}
+dt_tune_results |>
+  show_best(n= 10)
+
+dt_best_params <- dt_tune_results |>
+  select_best(metric = "mn_log_loss")
+
+dt_best_wf <- dt_clf_wf |>
+  finalize_workflow(dt_best_params)
+
+dt_best_fit <- dt_best_wf |>
+  fit(train)
+```
+
+```{r}
+log_loss <- augment(dt_best_fit, train) |>
+  mutate(priceRange = as.factor(priceRange)) |>
+  mn_log_loss(priceRange, starts_with(".pred"), - .pred_class)
+```
+
+```{r}
+submission <- dt_best_fit |>
+  augment(data) |>
+  rename(
+    prob_A = ".pred_0-250000",
+    prob_B = ".pred_250000-350000",
+    prob_C = ".pred_350000-450000",
+    prob_D = ".pred_450000-650000",
+    prob_E = ".pred_650000+",
+  ) |>
+  select(id, starts_with("pred"))
+
+write.csv(submission, "submission.csv", row.names = FALSE)
+```
+
+## KNN
+```{r}
+# Specification
+knn_clf_spec <- nearest_neighbor() %>%
+  set_engine("kknn") %>%
+  set_mode("classification")
+
+# Recipe
+knn_clf_rec <- recipe(priceRange ~ ., data = train) |>
+  step_normalize(all_numeric_predictors()) |>
+  step_rm(all_nominal_predictors()) |>
+  step_impute_median(all_numeric_predictors())
+  
+# Workflow
+knn_wf <- workflow() %>%
+  add_model(knn_clf_spec) %>%
+  add_recipe(knn_clf_rec)
+
+
+```
+
+```{r}
+n_cores <- parallel::detectCores()
+cl <- parallel::makeCluster(n_cores - 1, type = "PSOCK")
+doParallel::registerDoParallel(cl)
+
+tictoc::tic()
+
+knn_tune_results <- tune_bayes(
+  knn_wf,
+  resamples = train_folds,
+  metrics = metric_set(mn_log_loss),
+  initial = 10,  # Number of initial random grid points
+  control = control_bayes(verbose = TRUE)
+)
+
+# View results
+collect_metrics(knn_tune_results)
+
+
+tictoc::toc()
+
+doParallel::stopImplicitCluster()
+unregister()
+```
+
+```{r}
+best_knn_model <- knn_wf %>%
+  finalize_workflow(select_best(knn_tune_results, metric = "mn_log_loss"))
+
+# Fit the final model to the entire training data
+final_knn_fit <- fit(best_knn_model, data = train)
 ```
 
