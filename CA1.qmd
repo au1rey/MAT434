@@ -305,3 +305,62 @@ best_knn_model <- knn_wf %>%
 final_knn_fit <- fit(best_knn_model, data = train)
 ```
 
+## Random Forest
+
+```{r}
+# Specification
+rf_tune_spec <- rand_forest(trees = tune()) %>%
+  set_engine("ranger") %>%
+  set_mode("classification")
+
+# Recipe
+rf_tune_rec <- recipe(priceRange ~ ., data = train) |>
+  step_rm(description) |>
+  step_rm(id) |>
+  step_unknown(all_nominal_predictors) |> # If a categorical variable missing a variable, puts unknown in there
+  step_novel(all_nominal_predictors) |>
+  step_other(all_nominal_predictors, threshold = tune()) |> # Takes extremely low percent categorical variables and puts them into other group. Threshold tunes the percent
+  step_dummy(all_nominal_predictors) |>
+  step_impute_median(all_numeric_predictors) # Naive and computationally cheap way to fill in missing numeric values
+  
+# Workflow
+  rf_wf <- workflow() |>
+  add_model(rf_tune_spec) |>
+  add_recipe(rf_tune_rec)
+
+```
+
+```{r}
+n_cores <- parallel::detectCores()
+cl <- parallel::makeCluster(n_cores - 1, type = "PSOCK")
+doParallel::registerDoParallel(cl)
+
+tictoc::tic()
+
+rf_tune_results <- rf_wf |>
+  tune_grid(
+    resamples = train_folds,
+    grid = 12,
+    metrics = metric_set(mn_log_loss),
+    control = control_grid(parallel_over = "everything")
+  )
+  
+  tictoc::toc()
+
+doParallel::stopImplicitCluster()
+unregister()
+```
+```{r}
+rf_tune_results |>
+  show_best(metric = "mn_log_loss")
+
+best_params <- rf_tune_results |>
+  select_best(metric = "mn_log_loss")
+
+rf_final_wf <- rf_wf |>
+  finalize_workflow(best_params)
+
+
+  
+```
+
