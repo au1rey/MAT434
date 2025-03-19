@@ -42,8 +42,55 @@ train |>
 
 ## Tokenizaation
 ```{r}
+common_words_list <- train |>
+  mutate(tweet_id = row_number()) |>
+  unnest_tokens(word, tweet_text) |>
+  anti_join(stop_words) |>
+  filter(!(word %in% c("http", "https", "t.co", "bully", 
+                       "bullies", "bullied"))) |>
+  filter(!str_starts(word, "\\d+")) |>
+  count(word) |>
+  arrange(-n) |>
+  filter( n >= 100) |>
+  pull(word)
+
 train |>
   mutate(tweet_id = row_number()) |>
-  unnest_tokens(word, tweet_text)
+  unnest_tokens(word, tweet_text) |>
+  anti_join(stop_words) |>
+  filter(!(word %in% c("http", "https", "t.co", "bully", 
+                       "bullies", "bullied"))) |>
+  filter(!str_starts(word, "\\d+")) |>
+  filter(word %in% common_words_list)|>
+distinct() |> ## Get rid of multiple WORDS in a tweet
+  slice(1:1e4) |> ## First 10000 rows
+ mutate(
+   present = 1
+ ) |>
+  pivot_wider(id_cols = c(cyberbullying_type, tweet_id),
+              names_from = word, 
+              values_from = present)
+
+```
+## Data Visualization
+
+```{r}
+train |>
+  mutate(tweet_id = row_number()) |>
+  unnest_tokens(word, tweet_text) |>
+  anti_join(stop_words) |>
+  filter(!(word %in% c("http", "https", "t.co", "bully", 
+                       "bullies", "bullied"))) |>
+  filter(!str_starts(word, "\\d+")) |>
+  group_by(cyberbullying_type) |>
+  count(word) |>
+  top_n(15, n) |>
+  ungroup() |>
+  ggplot() +
+  geom_bar(aes(x = word, y = n, fill = cyberbullying_type),
+           stat = "identity", color = "black") +
+          facet_wrap(~cyberbullying_type, scales = "free") + 
+          coord_flip()
+
 ```
 
