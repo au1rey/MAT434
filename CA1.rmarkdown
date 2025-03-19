@@ -17,7 +17,11 @@ execute:
 code-fold: true
 ---
 
+
+
 # Setup
+
+
 ```{r}
 #| message: false
 library(ggplot2)
@@ -34,10 +38,14 @@ train <- training(data_splits)
 test <- testing(data_splits)
 
 ```
+
+
 # Statement of Purpose
 Zillow is a real estate market website that lists houses for sale in both the US and Canada. Zillow carries data on sale prices, rent prices, mortgage prices, locations, and house sizing details. This project seeks to construct predictive models on the listed price range of a property in the US. This project will enhance transparency in the real estate market by displaying the factors that impact listing price range. This can help buyers make informed decisions when buying a house, as well as help sellers figure out a practical price point to list their house at.
 # Exploratory Data Analysis
 Before we begin the analysis, here is a snippet of the first six rows of the Zillow data we will be working with. In the data set, there are 7498 observations.
+
+
 ```{r}
 data |>            # description is much too long
   mutate(description = str_trunc(description, width = 50)) |> 
@@ -47,7 +55,11 @@ data |>            # description is much too long
 ```
 
 
+
+
 Strata will be used in the training data set due to an unbalanced lower proportion of houses in the 0-250000 price range.
+
+
 ```{r}
 library(dplyr)
 # Check distribution of price_range in the full dataset
@@ -59,9 +71,13 @@ data |>
 
 ```
 
+
+
 ## Price Range Distribution
 
 This section maps the distribution of the priceRange variable. To begin with, pictured below is a chart displaying the summary of priceRange in our training data set this time.
+
+
 ```{r}
 train |>
   count(priceRange) |>
@@ -70,7 +86,11 @@ train |>
   kable_styling()
 ```
 
+
+
 Below is a visual bar chart displaying the summary of priceRange in our training data set. From both the graph and the bar chart, it appears that there are more homes in our data set that have the price range of: 250000-350000 and fewer homes that have the price range of: 0-250000. This lines up with the proportions of the entire data set from earlier, and further proves why it was necessary to use strata. 
+
+
 ```{r}
 ggplot(train, aes(x = priceRange, fill = priceRange)) +
   geom_bar() +
@@ -79,6 +99,8 @@ ggplot(train, aes(x = priceRange, fill = priceRange)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Diagonal prices
 ```
 
+
+
 The graph is reasonable, as the more average house prices (250000 to 650000) are the most populated with houses. The more extreme min and maximum price ranges have less houses, due to their rarity.
 
 Now that we understand the distribution of price ranges better, it's time to look for the factors that may influence them the most.
@@ -86,6 +108,8 @@ Now that we understand the distribution of price ranges better, it's time to loo
 ## Price Range and City
 
 Assuming the price range will vary by city is a reasonable guess, as some cities are known to be more expensive than others. To try and prove this, it is first best to look for how many properties exist in each city, so we can get a feel for the scope of the houses. We can do this buy creating a chart similar to the one we used for the count of priceRange.
+
+
 ```{r}
 train %>%
   count(city) %>%
@@ -93,6 +117,7 @@ train %>%
   kable() %>%
   kable_styling()
 ```
+
 ```{r}
 ggplot(train, aes(x = city, fill = city)) +
   geom_bar() +
@@ -101,12 +126,16 @@ ggplot(train, aes(x = city, fill = city)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Diagonal city
 ```
 
+
+
 Wow! It seems like 98% of our homes are located in Austin. Because of this horribly uneven and skewed distribution, it's not worth looking into if priceRange is effected by the city the house is in, since 98% of the houses are in the same city.
 
 Let's try something different. 
 
 ## Price Range and Home Type
 It is reasonable to suggest that the type of home may effect the price range the home is in due to size and accommodations. To prove this however, we will once again need a count of all the different home types.
+
+
 ```{r}
 train |>
   count(homeType)|>
@@ -114,6 +143,7 @@ train |>
   kable() |>
   kable_styling()
 ```
+
 ```{r}
 ggplot(train, aes(x = homeType, fill = homeType)) +
   geom_bar() +
@@ -122,6 +152,8 @@ ggplot(train, aes(x = homeType, fill = homeType)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Diagonal homeType
 ```
 
+
+
 Once again we have the same issue that happened when trying to correlate priceRange to city. The proportions are just too far off. 93% of houses in our training set are single family homes, so even if they were more expensive, it's unfair to justify it that way with such a skewed proportion.
 
 Let's try something else.
@@ -129,6 +161,8 @@ Let's try something else.
 ## Price Range and Average School Rating
 It would be interesting to see if there is a association between the average rating of a school, and the price range of a house. It is a generalized thought that the "nicer" (more expensive) the neighborhood is, the higher the rating for their schools. Let's see if this is true.
 First, we should calculate the summary statistics for the average school rating, to make sure this is worth looking into. 
+
+
 ```{r}
 train %>%
   summarize(
@@ -144,6 +178,7 @@ train %>%
   kable() %>%
   kable_styling()
 ```
+
 ```{r}
 ggplot(train, aes(x = "", y = avgSchoolRating)) + 
   geom_boxplot(fill = "lightblue") +
@@ -153,11 +188,15 @@ ggplot(train, aes(x = "", y = avgSchoolRating)) +
 
 ```
 
+
+
 Using the box plot and our summary statistic chart, we can see a clear spread of data that is similar to our proportions on price ranges from earlier. This is promising, let's find out if there is a correlation.
 
 ### Comparison
 
 Using another box plot, we will compare average school rating to price range. As shown in the box plot below, there is a positive association between the two variables. It is more likely that the lower the rating for the school is, the lower the median price range is. There is not much change in the higher scale of the chart (450000+), but there is a clear climb in price that follows a climb in school rating. This variable will be able to help us in predicting priceRange. 
+
+
 ```{r}
 ggplot(train, aes(x = priceRange, y = avgSchoolRating, fill = priceRange)) +
   geom_boxplot() +
@@ -165,6 +204,8 @@ ggplot(train, aes(x = priceRange, y = avgSchoolRating, fill = priceRange)) +
   labs(title = "Comparison of Average School Rating by Price Range", x = "Price Range", y = "Average School Rating")
 
 ```
+
+
 # Model Construction and Interpretation
 
 We will now use K-Nearest Neighbors (KNN) and decision trees—both multi-class models—to predict house price ranges. To enhance prediction accuracy, we will apply cross-validation and hyper-parameter tuning.
@@ -174,6 +215,8 @@ We will now use K-Nearest Neighbors (KNN) and decision trees—both multi-class 
 ## Decision Tree
 
   First we need to create the decision tree workflow.
+
+
 ```{r}
 # Specification
 dt_clf_spec <- decision_tree(min_n = tune(), tree_depth = tune()) |>
@@ -193,12 +236,17 @@ dt_clf_wf <- workflow() |>
   add_recipe(dt_clf_rec)
 ```
 
+
+
 ### Tuning
 
-  Next we need to create cross-validation folds.Because we used strata previously, we'll use it again here. Once we have our folds, we can begin tuning.
+  First we need to create cross-validation folds.Because we used strata previously, we'll use it again here. Once we have our folds, we can begin tuning.
+
+
 ```{r}
 train_folds <- vfold_cv(train, v = 10, strata = priceRange)
 ```
+
 ```{r}
 
 n_cores <- parallel::detectCores()
@@ -216,6 +264,7 @@ dt_tune_results <- dt_clf_wf |>
 doParallel::stopImplicitCluster()
 
 ```
+
 ```{r}
 dt_tune_results |>
   show_best(n= 10)
@@ -251,8 +300,11 @@ submission <- dt_best_fit %>%
 write.csv(submission, "submission.csv", row.names = FALSE)
 ```
 
+
+
 ## KNN
-  We will now create a KNN model to
+
+
 ```{r}
 # Specification
 knn_clf_spec <- nearest_neighbor() %>%
@@ -306,7 +358,11 @@ best_knn_model <- knn_wf %>%
 final_knn_fit <- fit(best_knn_model, data = train)
 ```
 
+
+
 ## Random Forest
+
+
 
 ```{r}
 # Specification
@@ -351,6 +407,7 @@ rf_tune_results <- rf_wf |>
 doParallel::stopImplicitCluster()
 unregister()
 ```
+
 ```{r}
 rf_tune_results |>
   show_best(metric = "mn_log_loss")

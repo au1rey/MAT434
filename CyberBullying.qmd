@@ -1,0 +1,49 @@
+---
+title: "Cyberbullying"
+format: html
+author: 
+  - name: Audrey Saidel
+    email: audrey.saidel@snhu.edu
+    affiliations: 
+      - name: Southern New Hampshire University
+date: 3/19/2025
+date-modified: 3/19/2025
+title-block-banner: "#F9629F"
+description: "Cyberbullying Text Analysis"
+theme: journal
+toc: true
+execute:
+  freeze: auto
+code-fold: true
+---
+# Setup
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(tidytext)
+
+data <- read_csv("https://raw.githubusercontent.com/agmath/agmath.github.io/refs/heads/master/data/classification/cyberbullying_tweets.csv")
+
+data <- data |>
+  distinct() 
+
+set.seed(355)
+data_splits <- initial_split(data, prop = 0.85)
+
+train <- training(data_splits)
+test <- testing(data_splits)
+```
+
+
+```{r}
+train |>
+  head()
+```
+
+## Tokenizaation
+```{r}
+train |>
+  mutate(tweet_id = row_number()) |>
+  unnest_tokens(word, tweet_text)
+```
+

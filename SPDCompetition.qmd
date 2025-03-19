@@ -1,0 +1,190 @@
+---
+title: "SPDCompetition"
+format: html
+author: 
+  - name: Audrey Saidel
+    email: audrey.saidel@snhu.edu
+    affiliations: 
+      - name: Southern New Hampshire University
+date: 3/17/2025
+date-modified: 3/17/2025
+title-block-banner: "#F9629F"
+description: "Saint Patty's Day Competition"
+theme: journal
+toc: true
+execute:
+  freeze: auto
+code-fold: true
+---
+
+```{r}
+#| message: false
+library(ggplot2)
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(kableExtra)
+
+set.seed(555)
+
+data <- read_csv("https://raw.githubusercontent.com/agmath/agmath.github.io/refs/heads/master/data/classification/blarney_data.csv")
+data <- data |>
+  mutate(kissed = as.factor(kissed))
+comp <- read_csv("https://raw.githubusercontent.com/agmath/agmath.github.io/refs/heads/master/data/classification/blarney_comp.csv")
+
+data_splits <- initial_split(data, 0.75)
+
+train <- training(data_splits)
+test <- testing(data_splits)
+
+
+```
+```{r}
+data |>           
+  head() |>
+  kable() |>
+  kable_styling()
+```
+```{r}
+data |>
+  count(kissed) |>
+  mutate(proportion = n / sum(n)) |>
+  kable() |>
+  kable_styling()
+```
+
+
+
+```{r}
+# Decision Tree
+dt_spec <- decision_tree(
+  cost_complexity = tune(),
+  tree_depth = tune(),
+  min_n = tune()
+) %>%
+  set_engine("rpart") %>%
+  set_mode("classification")
+dt_rec <- recipe(kissed ~ ., data = train) %>%
+  step_zv(all_numeric_predictors()) %>%
+  step_impute_median(all_numeric_predictors()) %>%
+  step_impute_mode(all_nominal_predictors()) %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_normalize(all_numeric_predictors())
+dt_wf <- workflow() %>%
+  add_recipe(dt_rec) %>%
+  add_model(dt_spec)
+
+```
+
+```{r}
+# Tuning
+
+n_cores <- parallel::detectCores()
+cl <- parallel::makeCluster(n_cores - 1, type = "PSOCK")
+doParallel::registerDoParallel(cl)
+
+tictoc::tic()
+
+set.seed(555)
+train_folds <- vfold_cv(train, v = 10)
+
+dt_grid <- grid_regular(
+  cost_complexity(range = c(0.01, 0.1)),
+  tree_depth(range = c(2, 10)),
+  min_n(range = c(5, 50)),
+  levels = 5
+)
+dt_tune_res <- tune_grid(
+  dt_wf,
+  resamples = train_folds,
+  grid = dt_grid,
+  metrics = metric_set(mn_log_loss)
+)
+
+tictoc::toc()
+
+doParallel::stopImplicitCluster()
+
+
+```
+```{r}
+dt_tune_res |>
+  show_best(n= 10)
+dt_best_params <- dt_tune_res |>
+  select_best(metric = "mn_log_loss")
+dt_best_wf <- dt_wf |>
+  finalize_workflow(dt_best_params)
+dt_best_fit <- dt_best_wf |>
+  fit(train)
+```
+
+```{r}
+# Random Forest 
+# Specification
+rf_tune_spec <- rand_forest(trees = tune()) %>%
+  set_engine("ranger") %>%
+  set_mode("classification")
+# Recipe
+rf_tune_rec <- recipe(kissed ~ ., data = train) |>
+  step_dummy(all_nominal_predictors()) |>
+  step_impute_median(all_numeric_predictors()) # Naive and computationally cheap way to fill in missing numeric values
+# Workflow
+  rf_wf <- workflow() |>
+  add_model(rf_tune_spec) |>
+  add_recipe(rf_tune_rec)
+
+```
+```{r}
+rf_fit <- workflow() |>
+  add_model(rand_forest(trees = 100) |> set_engine("ranger") |> set_mode("classification")) |>
+  add_recipe(rf_tune_rec) |>
+  fit(data = train)
+```
+
+```{r}
+#Tuning
+
+n_cores <- parallel::detectCores()
+cl <- parallel::makeCluster(n_cores - 1, type = "PSOCK")
+doParallel::registerDoParallel(cl)
+
+tictoc::tic()
+
+rf_tune_results <- rf_wf |>
+  tune_grid(
+    resamples = train_folds,
+    grid = 12,
+    metrics = metric_set(mn_log_loss),
+    control = control_grid(parallel_over = "everything")
+  )
+  
+  tictoc::toc()
+
+doParallel::stopImplicitCluster()
+
+```
+```{r}
+rf_tune_results |>
+  show_best(metric = "mn_log_loss")
+
+best_params <- rf_tune_results |>
+  select_best(metric = "mn_log_loss")
+
+rf_final_wf <- rf_wf |>
+  finalize_workflow(best_params)
+
+rf_best_fit <- rf_final_workflow |>
+  fit(train)
+  
+```
+
+```{r}
+my_submission <- rf_best_fit %>%
+  augment(comp) %>%
+  rename(kissed = .pred_yes) %>%
+  select(id, kissed)
+
+write.csv(my_submission, "my_submission.csv", row.names = FALSE)
+```
+
