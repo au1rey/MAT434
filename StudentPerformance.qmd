@@ -1,0 +1,138 @@
+---
+title: Student Performance Investigation
+author: 
+  - name: Audrey Saidel
+    email: audrey.saidel@snhu.edu
+    affiliations: 
+      - name: Southern New Hampshire University
+format: html
+date: 3/31/2025
+date-modified: 3/31/2025
+title-block-banner: "#F9629F"
+description: "Classification Final Project"
+theme: journal
+date-format: long
+theme: journal
+toc: true
+code-fold: true
+---
+## Setup
+```{r setup}
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(kableExtra)
+library(ggridges)
+library(marginaleffects)
+library(readr)
+
+# Load the data set
+data <- read_csv("/Users/saide/Downloads/archive/Student_performance_data _.csv")
+
+data_splits <- initial_split(data, prop = 0.8, strata = GradeClass)
+
+train <- training(data_splits)
+test <- testing(data_splits)
+
+unregister <- function() {
+  env <- foreach:::.foreachGlobals
+  rm(list=ls(name=env), pos=env)
+}
+
+
+```
+
+## Statement of Purpose
+
+This is an analysis on a synthetic data set of student performance created by Rabie El Kharou on Kaggle. The purpose of the data set is to have an overview on how different factors influence student academic performance and overall grade. I will be using this data set in order to predict student grade based on factors such as parental education, support, extracurriculars, and more. 
+
+## Executive Summary
+
+The goal of this document is to predict a student's grade based on outside and inside factors. The document will begin with an exploratory analysis to see specifically which factors play a big role into overall grade and how these factors interact with each other. After this, model construction will begin using the already known data as a reference. 
+
+## Introduction
+
+This data set, in theory, would help a school find risk factors in students before a large assessment. By being able to tell which predictors are important, schools can focus on giving the extra support high-risk students need before an examination. 
+
+There are four grade classes and we are trying to predict which one each student falls into. The highest grade class is zero, which is an  'A' (GPA >= 3.5). Grade class 1 is a 'B' (3.0 <= GPA < 3.5). Grade class 2 is a  'C' (2.5 <= GPA < 3.0). Grade class 3 is a 'D' (2.0 <= GPA < 2.5). Grade class 4 is a  'F' (GPA < 2.0), so the student is failing. It's important to mention what each grade class represents, as without explanation the category is vague.
+
+## Exploratory Data Analysis
+
+The original data set contains 2392 students, and 15 different columns of variables. Let's first look at the first few rows of the data set.
+```{r}
+# View the first few rows
+data |>
+  head() |>
+  kable()
+```
+### Univariate Analysis
+
+Because we are trying to predict grade class, it's important to see if the distribution of grade class is fairly proportional. This is important to see as we need to know if we should stratify this variable in our data splits.
+```{r}
+# Check distribution of gradeclass in the full dataset
+data |>
+  count(GradeClass) |>
+  mutate(proportion = n / sum(n)) |>
+  kable() |>
+  kable_styling()
+```
+It's clear that stratification is necessary as 50% of the students have a Grade Class of four, which means 50% of these students are failing. It is more rare for a student to get a good grade then a bad one.
+
+Let's look at some of the other categorical variables, this time in our training data.
+```{r}
+p1 <- train %>%
+  ggplot() + 
+  geom_bar(aes(x = Gender)) + 
+  labs(
+    title = "Gender",
+    x = "",
+    y = "Count"
+  ) + 
+  coord_flip()
+
+p2 <- train %>%
+  ggplot() + 
+  geom_bar(aes(x = ParentalEducation)) +
+  labs(
+    title = "Parental Education",
+    y = "Count",
+    x = ""
+  )
+
+p3 <- train %>%
+  mutate(ParentalSupport = case_when(
+    ParentalSupport==1 ~ "",
+    
+  ))
+  ggplot() + 
+  geom_bar(aes(x = ParentalSupport)) + 
+  labs(
+        title = "Parental Education Level",
+    x = "Parental Education",
+    y = "Count"
+  ) + 
+  coord_flip()
+
+p4 <- train %>%
+  ggplot() + 
+  geom_bar(aes(x = Tutoring)) + 
+  labs(
+    title = "Tutoring",
+    x = "",
+    y = "Count"
+  )
+
+(p1 + p2) / (p3 + p4)
+```
+
+### Multivariate Analysis
+
+## Model Construction
+
+One important part about preprocessing with this dataset specifically is that GPA needs to be removed in order to predict class grade. GPA is a variable that represents their future final GPA, so using it to predict grade class would essentially be cheating as you already have the answer to where their grade class is going to be. 
+### Decision Tree
+
+### Random Forest

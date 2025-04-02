@@ -93,4 +93,63 @@ train |>
           coord_flip()
 
 ```
+```{r}
+p <- train %>%
+  #filter(str_detect(cyberbullying_type, "gender") | str_detect(cyberbullying_type, "ethnicity"))
+  filter((cyberbullying_type == "gender") | (cyberbullying_type == "ethnicity")) %>%
+  unnest_tokens(word, tweet_text) %>%
+  anti_join(stop_words) %>%
+  filter(!(word %in% c("http", "https", "t.co", "bully",
+                       "bullies", "bullied"))) %>%
+  filter(!str_starts(word, "\\d+")) %>%
+  group_by(cyberbullying_type) %>%
+  count(word) %>%
+  filter(n > 25) %>%
+  pivot_wider(names_from = cyberbullying_type, values_from = n) %>% 
+  mutate(
+    ethnicity = ifelse(is.na(ethnicity), 0, ethnicity),
+    gender = ifelse(is.na(gender), 0, gender),
+  ) %>%
+  ggplot() + 
+  geom_text(aes(x = ethnicity, y = gender, label = word)) + 
+  geom_abline(linetype = "dashed")
+
+plotly::ggplotly(p)  
+```
+Gender and ethnicity comparison above.
+## Regular Expressions
+Working to extract Hashtags and Mentions
+```{r}
+train %>%
+  mutate(
+    hashtags = str_extract(tweet_text, "#([A-z]|\\d|-)+"),
+    mentions = str_extract(tweet_text, "@([A-z]|\\d|-)+")
+  ) %>%
+  filter(!is.na(hashtags) | !is.na(mentions))
+```
+Every tweet is repeated the amount of times it had a hashtag and mention
+```{r}
+ train %>%
+  mutate(
+    hashtags = str_extract_all(tweet_text, "#([A-z]|\\d|-)+"),
+    mentions = str_extract_all(tweet_text, "@([A-z]|\\d|-)+")
+  ) %>%
+  filter((lengths(hashtags) > 0) | (lengths(mentions) > 0)) %>%
+  unnest(mentions) %>%
+  unnest(hashtags)
+```
+Counting hashtags and mentions.
+
+```{r}
+train %>%
+  mutate(
+    hashtags = map_chr(str_extract_all(tweet_text, "#([A-z]|\\d|-)+"), ~ paste(.x, collapse = ", ")),
+    mentions = map_chr(str_extract_all(tweet_text, "@([A-z]|\\d|-)+"), ~ paste(.x, collapse = ", "))
+  ) %>%
+  filter((hashtags != "") | (mentions != "")) %>%
+  mutate(
+    hashtag_count = str_count(hashtags, ",") + 1,
+    mention_count = str_count(mentions, ",") + 1,
+  )
+```
 

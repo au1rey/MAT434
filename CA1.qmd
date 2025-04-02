@@ -33,6 +33,11 @@ data_splits <- initial_split(data, 0.75, strata = priceRange)
 train <- training(data_splits)
 test <- testing(data_splits)
 
+unregister <- function() {
+  env <- foreach:::.foreachGlobals
+  rm(list=ls(name=env), pos=env)
+}
+
 ```
 # Statement of Purpose
 Zillow is a real estate market website that lists houses for sale in both the US and Canada. Zillow carries data on sale prices, rent prices, mortgage prices, locations, and house sizing details. This project seeks to construct predictive models on the listed price range of a property in the US. This project will enhance transparency in the real estate market by displaying the factors that impact listing price range. This can help buyers make informed decisions when buying a house, as well as help sellers figure out a practical price point to list their house at.
@@ -255,8 +260,8 @@ write.csv(submission, "submission.csv", row.names = FALSE)
   We will now create a KNN model to
 ```{r}
 # Specification
-knn_clf_spec <- nearest_neighbor() %>%
-  set_engine("kknn") %>%
+knn_clf_spec <- nearest_neighbor(neighbors = tune()) |>
+  set_engine("kknn") |>
   set_mode("classification")
 
 # Recipe
@@ -295,7 +300,7 @@ collect_metrics(knn_tune_results)
 tictoc::toc()
 
 doParallel::stopImplicitCluster()
-unregister()
+
 ```
 
 ```{r}
@@ -310,25 +315,27 @@ final_knn_fit <- fit(best_knn_model, data = train)
 
 ```{r}
 # Specification
-rf_tune_spec <- rand_forest(trees = tune()) %>%
-  set_engine("ranger") %>%
+rf_tune_spec <- rand_forest(trees = tune()) |>
+  set_engine("ranger") |>
   set_mode("classification")
 
 # Recipe
 rf_tune_rec <- recipe(priceRange ~ ., data = train) |>
   step_rm(description) |>
   step_rm(id) |>
-  step_unknown(all_nominal_predictors) |> # If a categorical variable missing a variable, puts unknown in there
-  step_novel(all_nominal_predictors) |>
-  step_other(all_nominal_predictors, threshold = tune()) |> # Takes extremely low percent categorical variables and puts them into other group. Threshold tunes the percent
-  step_dummy(all_nominal_predictors) |>
-  step_impute_median(all_numeric_predictors) # Naive and computationally cheap way to fill in missing numeric values
+  step_novel(all_nominal_predictors()) |>
+  step_other(all_nominal_predictors(), threshold = tune()) |> # Takes extremely low percent categorical variables and puts them into other group. Threshold tunes the percent
+  step_dummy(all_nominal_predictors()) |>
+  step_impute_median(all_numeric_predictors()) # Naive and computationally cheap way to fill in missing numeric values
   
 # Workflow
   rf_wf <- workflow() |>
   add_model(rf_tune_spec) |>
   add_recipe(rf_tune_rec)
+  
 
+
+ 
 ```
 
 ```{r}
@@ -338,10 +345,11 @@ doParallel::registerDoParallel(cl)
 
 tictoc::tic()
 
+
 rf_tune_results <- rf_wf |>
   tune_grid(
     resamples = train_folds,
-    grid = 12,
+    grid = 5,
     metrics = metric_set(mn_log_loss),
     control = control_grid(parallel_over = "everything")
   )
@@ -349,7 +357,9 @@ rf_tune_results <- rf_wf |>
   tictoc::toc()
 
 doParallel::stopImplicitCluster()
+
 unregister()
+
 ```
 ```{r}
 rf_tune_results |>
@@ -361,7 +371,23 @@ best_params <- rf_tune_results |>
 rf_final_wf <- rf_wf |>
   finalize_workflow(best_params)
 
-
+rf_best_fit <- rf_final_wf |>
+  fit(train)
   
+```
+
+```{r}
+submission2 <- rf_best_fit %>%
+  augment(comp) %>%
+  rename(
+    prob_A = ".pred_0-250000",
+    prob_B = ".pred_250000-350000",
+    prob_C = ".pred_350000-450000",
+    prob_D = ".pred_450000-650000",
+    prob_E = ".pred_650000+"
+  ) %>%
+  select(id, starts_with ("prob"))
+
+write.csv(submission2, "submission2.csv", row.names = FALSE)
 ```
 
