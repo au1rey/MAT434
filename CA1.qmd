@@ -257,7 +257,7 @@ write.csv(submission, "submission.csv", row.names = FALSE)
 ```
 
 ## KNN
-  We will now create a KNN model to
+  We will now create a KNN model to compare with our decision tree model.
 ```{r}
 # Specification
 knn_clf_spec <- nearest_neighbor(neighbors = tune()) |>
@@ -312,6 +312,8 @@ final_knn_fit <- fit(best_knn_model, data = train)
 ```
 
 ## Random Forest
+
+Now let's set up a random forest model to get a more an even better prediction!
 
 ```{r}
 # Specification
