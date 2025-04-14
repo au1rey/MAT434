@@ -7,7 +7,7 @@ author:
       - name: Southern New Hampshire University
 format: html
 date: 3/31/2025
-date-modified: 3/31/2025
+date-modified: 4/8/2025
 title-block-banner: "#F9629F"
 description: "Classification Final Project"
 theme: journal
@@ -28,10 +28,12 @@ library(kableExtra)
 library(ggridges)
 library(marginaleffects)
 library(readr)
+library(ggplot2)
 
 # Load the data set
 data <- read_csv("/Users/saide/Downloads/archive/Student_performance_data _.csv")
 
+set.seed(555)
 data_splits <- initial_split(data, prop = 0.8, strata = GradeClass)
 
 train <- training(data_splits)
@@ -72,7 +74,7 @@ data |>
 
 Because we are trying to predict grade class, it's important to see if the distribution of grade class is fairly proportional. This is important to see as we need to know if we should stratify this variable in our data splits.
 ```{r}
-# Check distribution of gradeclass in the full dataset
+# Check distribution of gradeclass in the full data set
 data |>
   count(GradeClass) |>
   mutate(proportion = n / sum(n)) |>
@@ -84,18 +86,34 @@ It's clear that stratification is necessary as 50% of the students have a Grade 
 Let's look at some of the other categorical variables, this time in our training data.
 ```{r}
 p1 <- train %>%
-  ggplot() + 
-  geom_bar(aes(x = Gender)) + 
+  mutate(Extracurricular = case_when(
+    Extracurricular == 0 ~ "No",
+    Extracurricular == 1 ~ "Yes"
+  ),
+  Extracurricular = factor(Extracurricular, levels = c("No", "Yes")),
+    GradeClass = as.factor(GradeClass))
+  ggplot(p1, aes(x=Extracurricular)) + 
+  geom_bar() + 
   labs(
-    title = "Gender",
+    title = "Participates in Extracurriculars",
     x = "",
     y = "Count"
   ) + 
   coord_flip()
 
 p2 <- train %>%
-  ggplot() + 
-  geom_bar(aes(x = ParentalEducation)) +
+  mutate(ParentalEducation = case_when(
+    ParentalEducation == 0 ~ "None",
+    ParentalEducation == 1 ~ "High School",
+    ParentalEducation == 2 ~ "Some College",
+    ParentalEducation == 3 ~ "Bachelor's",
+    ParentalEducation == 4 ~ "Higher"
+  ),
+   ParentalEducation = factor(ParentalEducation, levels = c("None", "High School", "Some College", "Bachelor's", "Higher")),
+    GradeClass = as.factor(GradeClass))
+
+  ggplot(p2, aes(x = ParentalEducation)) +
+  geom_bar() +
   labs(
     title = "Parental Education",
     y = "Count",
@@ -104,35 +122,176 @@ p2 <- train %>%
 
 p3 <- train %>%
   mutate(ParentalSupport = case_when(
-    ParentalSupport==1 ~ "",
-    
-  ))
-  ggplot() + 
-  geom_bar(aes(x = ParentalSupport)) + 
+    ParentalSupport == 0 ~ "None",
+    ParentalSupport == 1 ~ "Low",
+    ParentalSupport== 2 ~ "Moderate",
+    ParentalSupport== 3 ~ "High",
+    ParentalSupport== 4 ~ "Very High"
+  ),
+   ParentalSupport = factor(ParentalSupport, levels = c("None", "Low", "Moderate", "High", "Very High")),
+    GradeClass = as.factor(GradeClass))
+ 
+
+  ggplot(p3, aes(x = ParentalSupport),
+                 fill = "pink") + 
+  geom_bar() + 
   labs(
-        title = "Parental Education Level",
-    x = "Parental Education",
+        title = "Parental Support Level",
+    x = "Parental Support",
     y = "Count"
   ) + 
   coord_flip()
 
 p4 <- train %>%
-  ggplot() + 
-  geom_bar(aes(x = Tutoring)) + 
+  mutate(Tutoring = case_when(
+    Tutoring == 0 ~ "Not Tutored",
+    Tutoring == 1 ~ "Tutored"
+  ),
+   Tutoring = factor(Tutoring, levels = c("Not Tutored", "Tutored")),
+    GradeClass = as.factor(GradeClass))
+
+  ggplot(p4, aes(x = Tutoring)) + 
+  geom_bar() + 
   labs(
     title = "Tutoring",
     x = "",
     y = "Count"
   )
 
-(p1 + p2) / (p3 + p4)
+p1
+
+p2
+
+p3
+
+p4
 ```
+These charts map out the distribution of other variables in the data set. The variables I chose were extracurriculars, parental education, parental support, and tutoring. While doing extracurriculars has a fairly even distribution, the other three variables do not. Surprisingly, there is a large amount of moderate/high parental support although there are a very few amount of kids who have high grades.
+
+Let's continue to view individual distributions
+
+```{r}
+# Gender
+p4 <- train %>%
+  mutate(Gender = case_when(
+    Gender == 0 ~ "Male",
+    Gender == 1 ~ "Female"
+  ))
+  ggplot(p4, aes(x= Gender)) + 
+  geom_bar() + 
+  labs(
+    title = "Gender",
+    x = "",
+    y = "Count"
+  ) 
+  
+# Ethnicity
+  
+  p5 <- train %>%
+  mutate(Ethnicity = case_when(
+    Ethnicity == 0 ~ "Caucasian",
+    Ethnicity == 1 ~ "African",
+    Ethnicity == 2 ~ "Asian",
+    Ethnicity == 3 ~ "Other"
+  ),
+    Ethnicity = factor(Ethnicity, levels = c("Caucasian", "African", "Asian", "Other")),
+    GradeClass = as.factor(GradeClass))
+  ggplot(p5, aes(x = Ethnicity)) + 
+  geom_bar() + 
+  labs(
+    title = "Ethnicity",
+    x = "",
+    y = "Count"
+  ) 
+  
+# Age Distribution
+
+ggplot(train, aes(x = Age)) + 
+  geom_bar() + 
+  labs(
+    title = "Age",
+    x = "",
+    y = "Count"
+  ) 
+ 
+
+```
+
 
 ### Multivariate Analysis
 
+We have a grasp on individual distributions, now let's view the relationships between grade class and these variables.
+
+Let's begin with categorical x categorical analysis. The variables we will be distributing alongside GradeClass are extracurriculars, parental education, parental support, and ethnicity. 
+
+```{r}
+
+ggplot(p5, aes(x = Ethnicity, fill = GradeClass)) + 
+  geom_bar(position = "stack") + 
+  labs(
+    title = "Ethnicity and Grade Class",
+    x = "Ethnicity",
+    y = ""
+  )  +
+  theme_minimal()
+
+ggplot(p2, aes(x = ParentalEducation, fill = GradeClass)) + 
+  geom_bar(position = "stack") + 
+  labs(
+    title = "Parental Education and Grade Class",
+    x = "Parental Education",
+    y = ""
+  )  +
+  theme_minimal()
+
+ggplot(p3, aes(x = ParentalSupport, fill = GradeClass)) + 
+  geom_bar(position = "stack") + 
+  labs(
+    title = "Parental Support and Grade Class",
+    x = "Parental Support",
+    y = ""
+  )  +
+  theme_minimal()
+
+ggplot(p1, aes(x = Extracurricular, fill = GradeClass)) + 
+  geom_bar(position = "stack") + 
+  labs(
+    title = "Extracurriculars and Grade Class",
+    x = "Extracurriculars",
+    y = ""
+  )  +
+  theme_minimal()
+
+```
+It appears that extracurriculars appears to be relatively proportional, so it may not be the best parameter to focus on. Parental Support seems to make a difference, especially in the "high" column as compared to the "moderate", "low", and "none" columns.
+
+Next let's look at a categorical and numerical boxplot, wherein grade class is compared to absences. 
+```{r}
+ggplot(train, aes(x = GradeClass, y = Absences)) + 
+  geom_boxplot(fill = "pink", color = "black") + 
+  labs(
+    title = "Absences by Grade Class",
+    x = "Grade Class",
+    y = "Absences"
+  ) + 
+  theme_minimal()
+
+ggplot(train, aes(x = GradeClass, y = StudyTimeWeekly)) + 
+  geom_boxplot(fill = "pink", color = "black") + 
+  labs(
+    title = "Study Time Weekly by Grade Class",
+    x = "Grade Class",
+    y = "Study Time Weekly"
+  ) + 
+  theme_minimal()
+
+```
+
+
 ## Model Construction
 
-One important part about preprocessing with this dataset specifically is that GPA needs to be removed in order to predict class grade. GPA is a variable that represents their future final GPA, so using it to predict grade class would essentially be cheating as you already have the answer to where their grade class is going to be. 
+One important part about pre-processing with this data set specifically is that GPA needs to be removed in order to predict class grade. GPA is a variable that represents their future final GPA, so using it to predict grade class would essentially be cheating as you already have the answer to where their grade class is going to be. 
+
 ### Decision Tree
 
 ### Random Forest
