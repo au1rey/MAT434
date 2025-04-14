@@ -7,12 +7,11 @@ author:
       - name: Southern New Hampshire University
 format: html
 date: 3/31/2025
-date-modified: 4/8/2025
+date-modified: 4/14/2025
 title-block-banner: "#F9629F"
 description: "Classification Final Project"
 theme: journal
 date-format: long
-theme: journal
 toc: true
 code-fold: true
 ---
@@ -29,6 +28,7 @@ library(ggridges)
 library(marginaleffects)
 library(readr)
 library(ggplot2)
+library(yardstick)
 
 # Load the data set
 data <- read_csv("/Users/saide/Downloads/archive/Student_performance_data _.csv")
@@ -166,6 +166,7 @@ p3
 
 p4
 ```
+
 These charts map out the distribution of other variables in the data set. The variables I chose were extracurriculars, parental education, parental support, and tutoring. While doing extracurriculars has a fairly even distribution, the other three variables do not. Surprisingly, there is a large amount of moderate/high parental support although there are a very few amount of kids who have high grades.
 
 Let's continue to view individual distributions
@@ -286,7 +287,7 @@ ggplot(train, aes(x = GradeClass, y = StudyTimeWeekly)) +
   theme_minimal()
 
 ```
-
+There are clear associations between the numerical data like study time and absences and grade class. More absences equates to a lower grade, while more study time equates to a higher one. This is important information that we can use during tuning to get more accurate predictions.
 
 ## Model Construction
 
@@ -295,3 +296,49 @@ One important part about pre-processing with this data set specifically is that 
 ### Decision Tree
 
 ### Random Forest
+
+Creating a random forest model will allow us to use machine learning to predict the grade class of a student.
+Let's build, then tune.
+```{r}
+# Specification
+rf_tune_spec <- rand_forest(trees = tune()) |>
+  set_engine("ranger") |>
+  set_mode("classification")
+
+# Recipe
+rf_tune_rec <- recipe(GradeClass ~ ., data = train) |>
+  step_rm(GPA)
+  
+# Workflow
+  rf_wf <- workflow() |>
+  add_model(rf_tune_spec) |>
+  add_recipe(rf_tune_rec)
+  
+# Cross Validation Folds
+  train_folds <- vfold_cv(train, v = 10)
+  
+```
+
+```{r}
+#n_cores <- parallel::detectCores()
+#cl <- parallel::makeCluster(n_cores - 1, type = "PSOCK")
+#doParallel::registerDoParallel(cl)
+
+#tictoc::tic()
+
+
+#rf_tune_results <- rf_wf |>
+  #tune_grid(
+   # resamples = train_folds,
+    #grid = 5,
+    #metrics = metric_set(f_meas, mn_log_loss),
+    #control = control_grid(parallel_over = "everything")
+ # )
+  
+ # tictoc::toc()
+
+#doParallel::stopImplicitCluster()
+
+
+```
+
