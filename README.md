@@ -15,4 +15,4 @@ ggplot2, kableExtra, tidymodels
 
 Links:
 https://au1rey.github.io/MAT434/CA1.html
-au1rey.github.io/MAT434/StudentPerformance.html
+https://au1rey.github.io/MAT434/StudentPerformance.html
