@@ -14,11 +14,11 @@ theme: journal
 date-format: long
 toc: true
 code-fold: true
+warning: false
 ---
 ## Setup
 ```{r setup}
 #| message: false
-#| warning: false
 
 library(tidyverse)
 library(tidymodels)
