@@ -341,11 +341,6 @@ rf_tune_rec <- recipe(priceRange ~ ., data = train) |>
 ```
 
 ```{r}
-n_cores <- parallel::detectCores()
-cl <- parallel::makeCluster(n_cores - 1, type = "PSOCK")
-doParallel::registerDoParallel(cl)
-
-tictoc::tic()
 
 
 rf_tune_results <- rf_wf |>
@@ -356,11 +351,6 @@ rf_tune_results <- rf_wf |>
     control = control_grid(parallel_over = "everything")
   )
   
-  tictoc::toc()
-
-doParallel::stopImplicitCluster()
-
-unregister()
 
 ```
 ```{r}

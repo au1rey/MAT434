@@ -29,6 +29,8 @@ library(marginaleffects)
 library(readr)
 library(ggplot2)
 library(yardstick)
+library(xgboost)
+
 
 # Load the data set
 data <- read_csv("/Users/saide/Downloads/archive/Student_performance_data _.csv")
@@ -39,10 +41,6 @@ data_splits <- initial_split(data, prop = 0.8, strata = GradeClass)
 train <- training(data_splits)
 test <- testing(data_splits)
 
-unregister <- function() {
-  env <- foreach:::.foreachGlobals
-  rm(list=ls(name=env), pos=env)
-}
 
 
 ```
@@ -85,7 +83,7 @@ It's clear that stratification is necessary as 50% of the students have a Grade 
 
 Let's look at some of the other categorical variables, this time in our training data.
 ```{r}
-p1 <- train %>%
+p1 <- train |>
   mutate(Extracurricular = case_when(
     Extracurricular == 0 ~ "No",
     Extracurricular == 1 ~ "Yes"
@@ -101,7 +99,7 @@ p1 <- train %>%
   ) + 
   coord_flip()
 
-p2 <- train %>%
+p2 <- train |>
   mutate(ParentalEducation = case_when(
     ParentalEducation == 0 ~ "None",
     ParentalEducation == 1 ~ "High School",
@@ -120,7 +118,7 @@ p2 <- train %>%
     x = ""
   )
 
-p3 <- train %>%
+p3 <- train |>
   mutate(ParentalSupport = case_when(
     ParentalSupport == 0 ~ "None",
     ParentalSupport == 1 ~ "Low",
@@ -142,7 +140,7 @@ p3 <- train %>%
   ) + 
   coord_flip()
 
-p4 <- train %>%
+p4 <- train |>
   mutate(Tutoring = case_when(
     Tutoring == 0 ~ "Not Tutored",
     Tutoring == 1 ~ "Tutored"
@@ -173,7 +171,7 @@ Let's continue to view individual distributions
 
 ```{r}
 # Gender
-p4 <- train %>%
+p4 <- train |>
   mutate(Gender = case_when(
     Gender == 0 ~ "Male",
     Gender == 1 ~ "Female"
@@ -188,7 +186,7 @@ p4 <- train %>%
   
 # Ethnicity
   
-  p5 <- train %>%
+  p5 <- train |>
   mutate(Ethnicity = case_when(
     Ethnicity == 0 ~ "Caucasian",
     Ethnicity == 1 ~ "African",
@@ -293,7 +291,6 @@ There are clear associations between the numerical data like study time and abse
 
 One important part about pre-processing with this data set specifically is that GPA needs to be removed in order to predict class grade. GPA is a variable that represents their future final GPA, so using it to predict grade class would essentially be cheating as you already have the answer to where their grade class is going to be. 
 
-### Decision Tree
 
 ### Random Forest
 
@@ -301,13 +298,18 @@ Creating a random forest model will allow us to use machine learning to predict 
 Let's build, then tune.
 ```{r}
 # Specification
-rf_tune_spec <- rand_forest(trees = tune()) |>
+rf_tune_spec <- rand_forest(
+  mtry = tune(),
+  trees = 1000,
+  min_n = tune()
+  ) |>
   set_engine("ranger") |>
   set_mode("classification")
 
 # Recipe
 rf_tune_rec <- recipe(GradeClass ~ ., data = train) |>
-  step_rm(GPA)
+  step_rm(GPA) |>
+   step_mutate(GradeClass = as.factor(GradeClass))
   
 # Workflow
   rf_wf <- workflow() |>
@@ -315,30 +317,228 @@ rf_tune_rec <- recipe(GradeClass ~ ., data = train) |>
   add_recipe(rf_tune_rec)
   
 # Cross Validation Folds
+  set.seed(123)
   train_folds <- vfold_cv(train, v = 10)
   
 ```
+```{r}
+set.seed(345)
+tune_res <- tune_grid(
+  rf_wf,
+  resamples = train_folds,
+  metrics = metric_set(f_meas, mn_log_loss),
+  grid = 20
+)
+
+tune_res
+```
+Let's see how this grid turned out using mn log loss as our metric to plot min n and mtry. This way we can see what number range do better and make our tuning more specific.
 
 ```{r}
-#n_cores <- parallel::detectCores()
-#cl <- parallel::makeCluster(n_cores - 1, type = "PSOCK")
-#doParallel::registerDoParallel(cl)
-
-#tictoc::tic()
-
-
-#rf_tune_results <- rf_wf |>
-  #tune_grid(
-   # resamples = train_folds,
-    #grid = 5,
-    #metrics = metric_set(f_meas, mn_log_loss),
-    #control = control_grid(parallel_over = "everything")
- # )
-  
- # tictoc::toc()
-
-#doParallel::stopImplicitCluster()
-
-
+tune_res |>
+  autoplot()
 ```
 
+```{r}
+tune_res |>
+  collect_metrics() |>
+  filter(.metric == "mn_log_loss")|>
+  select(mean, min_n, mtry) |>
+  pivot_longer(min_n:mtry,
+    values_to = "value",
+    names_to = "parameter"
+  ) |>
+  ggplot(aes(value, mean, color = parameter)) +
+  geom_point(show.legend = FALSE) +
+  facet_wrap(~parameter, scales = "free_x") +
+  labs(x = NULL, y = "log loss")
+```
+From our charts, we can see that min_n in the 20-30 range produce better results, while mtry in the 5-10 range also produce better log loss results. A lower log loss is better. Let's make a regular systematic grid across this range of hyperparameter values.
+```{r}
+rf_grid <- grid_regular(
+  mtry(range = c(5, 10)),
+  min_n(range = c(20, 30)),
+  levels = 5
+)
+```
+Let's tune one more time with this new grid.
+```{r}
+set.seed(456)
+regular_res <- tune_grid(
+  rf_wf,
+  resamples = train_folds,
+  grid = rf_grid,
+  metrics = metric_set(f_meas, mn_log_loss)
+)
+
+regular_res
+
+collect_metrics(regular_res)
+```
+Let's gather our best fit for the metric "log_loss". 
+
+```{r}
+regular_res |>
+  show_best(metric = "mn_log_loss")
+
+best_params <- regular_res |>
+  select_best(metric = "mn_log_loss")
+
+rf_final_wf <- rf_wf |>
+  finalize_workflow(best_params)
+
+rf_best_fit <- rf_final_wf |>
+  fit(train)
+
+# Finalize workflow with best params
+rf_best_fit <- last_fit(rf_final_wf, split = data_splits)
+```
+
+It appears our best is .62. Random is 1.609 as we have five classes, so .62 is significantly lower and a good mean. 
+
+We can create a confusion matrix to see what classes our model struggles on predicting, and which ones it succeeds in.
+```{r}
+rf_best_fit|>
+  collect_predictions() |>
+  conf_mat(truth = GradeClass, estimate = .pred_class)
+
+```
+The results are unsurprising. The model does best in predicting the grade classes with more students in them. For example, it predicting 220 class 4's correct, and only 24 wrong, which is a much better ratio then in class 0 where it predicted five right and 16 wrong.
+
+Let's look at our f_meas confusion matrix and mean to see if it's any better at predicting the lower grade classes.
+
+```{r}
+regular_res |>
+  show_best(metric = "f_meas")
+
+best_params_f <- regular_res |>
+  select_best(metric = "f_meas")
+
+rf_final_wf_f <- rf_wf |>
+  finalize_workflow(best_params_f)
+
+rf_best_fit_f <- rf_final_wf_f |>
+  fit(train)
+
+# Finalize workflow with best params
+rf_best_fit_f <- last_fit(rf_final_wf_f, split = data_splits)
+
+rf_best_fit_f |>
+  collect_predictions() |>
+  conf_mat(truth = GradeClass, estimate = .pred_class)
+```
+At least we checked, but it appears that this is more poor at predicting grade class zero then log_loss. Let's try a different machine learning model to see if we have better luck.
+
+### XGBoost
+
+XGBoost (Extreme Gradient Boosting) is a classification model. The reason we're going with this model next is because we can use "scale_pos_weight" to help with our rare classes. There will be a lot of tuning of model hyperparameters, so let's see how this goes.
+
+```{r}
+# Specification
+xgb_spec <- boost_tree(
+  trees = 1000,
+  tree_depth = tune(), 
+  min_n = tune(),
+  loss_reduction = tune(),                    
+  sample_size = tune(), 
+  mtry = tune(),         
+  learn_rate = tune(),
+) |>
+  set_engine("xgboost", scale_pos_weight = tune()) |>
+  set_mode("classification")
+
+# Recipe
+xgb_rec <- recipe(GradeClass ~ ., data = train) |>
+  step_rm(GPA) |>
+  step_mutate(GradeClass = as.factor(GradeClass))
+
+# Workflow
+xgb_wf <- workflow() |>
+  add_recipe(xgb_rec) |>
+  add_model(xgb_spec)
+
+xgb_wf
+
+```
+Now let's create our grid that we'll use for tuning:
+
+```{r}
+xgb_grid <- grid_latin_hypercube(
+  tree_depth(),
+  min_n(),
+  loss_reduction(),
+  sample_size = sample_prop(),
+  finalize(mtry(), train),
+  learn_rate(),
+  scale_pos_weight(),
+  size = 30
+)
+
+xgb_grid
+```
+Now we can tune using this grid and parallel processing (this will likely take a while).
+```{r}
+doParallel::registerDoParallel()
+
+set.seed(123)
+xgb_res <- tune_grid(
+  xgb_wf,
+  resamples = train_folds,
+  grid = xgb_grid,
+  metrics = metric_set(mn_log_loss, f_meas),
+  control = control_grid(save_pred = TRUE)
+)
+
+xgb_res
+```
+Let's collect our metrics
+```{r}
+collect_metrics(xgb_res)
+```
+And then display our best for log loss
+
+```{r}
+show_best(xgb_res, metric = "mn_log_loss")
+
+best_mn <- select_best(xgb_res, metric = "mn_log_loss")
+best_mn
+```
+Now let's apply these best hyperparameters and finalize a new workflow. With this, our workflow is now set up with new optimized parameters.
+
+```{r}
+final_xgb <- finalize_workflow(
+  xgb_wf,
+  best_mn
+)
+
+final_xgb
+```
+Now we can do a final fit and collect the metrics to see if this model is better than our random forest.
+
+```{r}
+final_xgb_res <- last_fit(final_xgb, data_splits, metrics = metric_set(mn_log_loss, accuracy, f_meas))
+
+
+collect_metrics(final_xgb_res)
+```
+Well. It didn't get better! This is most likely due to the fact that we specifically tuned on our random forest, using ranges, but not here. The real test is whether or not the model is good at predicting class zero and one.
+
+```{r}
+final_xgb_res |>
+  collect_predictions() |>
+  conf_mat(truth = GradeClass, estimate = .pred_class)
+```
+From the confusion matrix, it appears that the xgboost model did not improve finding the rarer classes. This is unfortunate but can happen.
+## Conclusion
+
+It appears that our random forest model is the better model (likely due to specific tuning methods), despite using scale_pos_weight in the xgboost model. The log loss estimate for the random forest model was about .1 less than the one in the xgboost model, rendering its performance as better.
+
+In the future, I'd like to try and do more specific tuning with the xgboost model to see if I can make it better at predicting grade classes zero and one. If I can't, I would try and construct another model that can, and use a stacking method in order to get more accurate predictions for ALL grade classes. 
+
+## References
+
+📚 Students Performance Dataset 📚. (2024). Rabie El Kharoua. Kaggle.
+
+Silge, Julia. “Tuning Random Forest Hyperparameters with #Tidytuesday Trees Data.” Julia Silge, 26 Mar. 2020, juliasilge.com/blog/sf-trees-random-tuning/. 
+
+Silge, Julia. “Tune XGBoost with Tidymodels and #tidytuesday Beach Volleyball.” Julia Silge, 21 May 2020, juliasilge.com/blog/xgboost-tune-volleyball/. 
