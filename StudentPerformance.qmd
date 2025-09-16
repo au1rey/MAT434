@@ -529,6 +529,7 @@ final_xgb_res |>
   conf_mat(truth = GradeClass, estimate = .pred_class)
 ```
 From the confusion matrix, it appears that the xgboost model did not improve finding the rarer classes. This is unfortunate but can happen.
+
 ## Conclusion
 
 It appears that our random forest model is the better model (likely due to specific tuning methods), despite using scale_pos_weight in the xgboost model. The log loss estimate for the random forest model was about .1 less than the one in the xgboost model, rendering its performance as better.
